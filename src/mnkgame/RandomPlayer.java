@@ -29,6 +29,9 @@ import java.util.Random;
  */
 public class RandomPlayer  implements MNKPlayer {
 	private Random rand;
+	private MNKBoard B;
+	private MNKGameState myWin;
+	private MNKGameState yourWin;
 	private int TIMEOUT;
 
 	/**
@@ -40,8 +43,11 @@ public class RandomPlayer  implements MNKPlayer {
 	public void initPlayer(int M, int N, int K, boolean first, int timeout_in_secs) {
 		// New random seed for each game
 		rand    = new Random(System.currentTimeMillis()); 
-		// Save the timeout for testing purposes
-		TIMEOUT = timeout_in_secs;
+
+		B       = new MNKBoard(M,N,K); // board interna
+		myWin   = first ? MNKGameState.WINP1 : MNKGameState.WINP2; //ci aiutano a capire quando uno dei due player ha vinto
+		yourWin = first ? MNKGameState.WINP2 : MNKGameState.WINP1; // utilissimo per controlli finali e anche non
+		TIMEOUT = timeout_in_secs;	
 		
 		// Uncomment to chech the initialization timeout
 		/* 
@@ -54,9 +60,25 @@ public class RandomPlayer  implements MNKPlayer {
 	}
 
 	/**
-   * Selects a random cell in <code>FC</code>
+	 * Selects a position among those listed in the <code>FC</code> array.
+   * <p>
+   * 1 Selects a winning cell (if any) from <code>FC</code>, otherwise
+   * 2 selects a cell (if any) that prevents the adversary to win 
+   * with his next move. 
+   * TODO:
+   * 3 - lanci alpha beta pruning, ma ottimizzato con alcune cose
+    a - depth limitata (dinamica, basata su grandezza scacchiera)
+    b - timeout se ci mette troppo gioca a caso (ricorsivo, passa timeout -1 per 1 secondo di scarto per chiudere tutte le ricorsioni)
+    c - range limitato di caselle da controllare (giocando ottimizzato si gioca sempre su caselle adiacenti quindi stonks)
+    d - per il punto c trovare altri modi maybe per ottimizzare scegliere il migliore se non aumenta la complessità
+   * 
+   * If all previous cases do not apply, selects
+   * a random cell in <code>FC</code>.
+	 * </p>
    */
-	public MNKCell selectCell(MNKCell[] FC, MNKCell[] MC) {
+	public MNKCell selectCell(MNKCell[] FC, MNKCell[] MC) { // FC = free cells, MC = marked cells
+		long start = System.currentTimeMillis(); // prendo il tempo di inizio esecuzione funzione (per il timer)
+
 		// Uncomment to chech the move timeout
 		/* 
 		try {
@@ -65,10 +87,52 @@ public class RandomPlayer  implements MNKPlayer {
 		catch(Exception e) {
 		}
 		*/
-		return FC[rand.nextInt(FC.length)];
+
+		//salva l'ultima markedcell nella board interna
+		if (MC.length > 0) {
+			MNKCell c = MC[MC.length -1];
+			B.markCell(c.i, c.j);
+		}
+		
+		if (FC.length == 1) return FC[FC.length-1]; // ritorno immediatamente se non devo calcolare nulla (free cells = 1)
+
+		// controllo per mossa finale vincente
+		for(MNKCell d : FC) {
+			// tempo limitato
+			if((System.currentTimeMillis()-start)/1000.0 > TIMEOUT*(99.0/100.0)) { //controllo del timeout
+				MNKCell c = FC[rand.nextInt(FC.length)];
+				B.markCell(c.i,c.j);
+				return c;
+			} else if(B.markCell(d.i,d.j) == myWin) {
+				return d;  
+			} else {
+				B.unmarkCell();
+			}
+		}
+		int pos = rand.nextInt(FC.length); //serve per il prossimo for
+		MNKCell c = FC[pos]; //preparo una cella casuale da ritornare in qualunque momento in caso di timeout o peggior caso
+		B.markCell(c.i,c.j); //marco la cella casuale per calcoli interni e successivi
+		
+		for(int k = 0; k < FC.length; k++) {
+      		if((System.currentTimeMillis()-start)/1000.0 > TIMEOUT*(99.0/100.0)) { //ritorna random se timeout
+				return FC[pos];
+			} else if(k != pos) {     
+				MNKCell d = FC[k];
+				if(B.markCell(d.i,d.j) == yourWin) {
+					B.unmarkCell();        // undo adversary move
+					B.unmarkCell();	       // undo my move (altrimenti vado a marcare il segno sbagliato penso)
+					B.markCell(d.i,d.j);   // select his winning position
+					return d;							 // return his winning position
+				} else {
+					B.unmarkCell();	       // undo adversary move to try a new one
+				}	
+			}	
+		}
+
+		return c; //arrivato alla fine ritorna casuale
 	}
 
 	public String playerName() {
-		return "R4nd0m";
+		return "SIUM";
 	}
 }
