@@ -58,7 +58,34 @@ public class RandomPlayer  implements MNKPlayer {
 		}
 		*/
 	}
-
+	protected int minmax(MNKCell[] FC, int depth, boolean myturn) {
+		if (depth > Int((B.M + B.N)/12)) { //se la profondità supera 1/6 della grandezza complessiva della board non computare più
+			return 0;
+		}
+		int bscore= -999999999;
+		int score = 0;
+		if (myturn) {
+			for (MNKcell d : FC) {
+				if (B.markCell(d.i,d.j) == myWin) return 1;//marco la cella e controllo se è uno stato finale, in caso ritorno
+				if (FC.length >= depth+1) return 0;//controllo per caso base pareggio
+				score = minmax(FC, depth +1, !myturn);
+				B.unmarkCell();
+				bscore= max(score,bscore);
+			}
+			return bscore;
+		}
+		else {
+			bscore = 999999999;
+			for (MNKcell d : FC) {
+				if (B.markCell(d.i,d.j) == yourWin) return -1;//marco la cella e controllo se è uno stato finale, in caso ritorno
+				if (FC.length >= depth+1) return 0;//controllo per caso base pareggio
+				score = minmax(FC, depth +1, !myturn);
+				B.unmarkCell();
+				bscore= min(score,bscore);
+			}
+			return bscore;
+		}
+	}
 	/**
 	 * Selects a position among those listed in the <code>FC</code> array.
    * <p>
@@ -128,6 +155,28 @@ public class RandomPlayer  implements MNKPlayer {
 				}	
 			}	
 		}
+		//sium si fa il minmax non ottimizzato per un cazzo giusto per avere una base
+		int score = -99999999,bscore = -99999999;
+		MNKCell bcell = FC[rand.nextInt(FC.length)]; 
+		//best choice, inizializzata per evitare che ritorni vuota se arriva al timeout senza riuscire a computare anche una sola cella
+		for(MNKCell d : FC) {
+			if((System.currentTimeMillis()-start)/1000.0 > TIMEOUT*(99.0/100.0)) { //controllo del timeout
+				B.markCell(bcell.i,bcell.j);
+				return bcell;//ritorna l'opzione migliore trovata fin'ora
+			}
+			B.markCell(d.i,d.j);
+			score = minmax(FC,0,true);
+			if (bscore < score) {
+				bscore = score;
+				bcell = d;
+			}
+			B.unmarkCell();
+		}//finito il for ritorna
+		return bcell;
+		//il minmax è da testare
+
+
+
 
 		return c; //arrivato alla fine ritorna casuale
 	}
