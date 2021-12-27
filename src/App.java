@@ -1,4 +1,4 @@
-import mnkgame.*;
+//import mnkgame.*;
 // strategia
 /* 
 
