@@ -77,41 +77,57 @@ public class RandomPlayer  implements MNKPlayer {
 		System.out.println(a);
 	}
 
-	protected int minmax(MNKCell[] FC,MNKCell selected, int depth, boolean myturn, long start) {
-		if (depth > (int)((B.M + B.N)/12)||(System.currentTimeMillis()-start)/5000.0 > TIMEOUT*(99.0/100.0)) { 
-			//se la profondità supera 1/6 della grandezza complessiva della board oppure il tempo è scaduto non computare più
+	public boolean contains(MNKCell[] Array, MNKCell cell) {
+		for (MNKCell mnkcell : Array) {
+			if (mnkcell.i == cell.i && mnkcell.j == cell.j) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+
+
+	protected int minmax(MNKCell[] FC, int depth, boolean myturn, long start) {
+		//print("depth: "+ String.valueOf(depth));
+		if (depth > (int)((B.M * B.N)/3)||(System.currentTimeMillis()-start)/5000.0 > TIMEOUT*(99.0/100.0)) { 
+			//se la profondità supera 1/3 della grandezza complessiva della board oppure il tempo è scaduto non computare più
 			return 0;
 		}
 		int bscore= -999999999;
 		int score = 0;
 		if (myturn) {
 			for (MNKCell d : FC) { 
-				if (d != selected) { //controllo d non sia la stessa cella che abbiamo già selezionato nella board interna
-					if (B.markCell(d.i,d.j) == myWin) {//marco la cella e controllo se è uno stato finale, in caso ritorno
-						B.unmarkCell();
-						return 1;
-					}
-					if (FC.length >= depth+1) return 0;//controllo per caso base pareggio
-					score = minmax(FC, selected, depth +1, !myturn,start);
+				if (B.markCell(d.i,d.j) == myWin) {//marco la cella e controllo se è uno stato finale, in caso ritorno
 					B.unmarkCell();
-					bscore= max(score,bscore);
+					//print("a");
+					return 1;
 				}
+				if (FC.length <= depth+1){
+					B.unmarkCell();
+					return 0;//controllo per caso base pareggio
+				} 
+				score = score + minmax(B.getFreeCells(), depth +1, !myturn,start);
+				B.unmarkCell();
+				bscore = max(score,bscore);
 			}
 			return bscore;
 		}
 		else {
 			bscore = 999999999;
 			for (MNKCell d : FC) {
-				if (d != selected) { //controllo d non sia la stessa cella che abbiamo già selezionato nella board interna
-					if (B.markCell(d.i,d.j) == yourWin) {//marco la cella e controllo se è uno stato finale, in caso ritorno
-						B.unmarkCell();
-						return -1;
-					}
-					if (FC.length >= depth+1) return 0;//controllo per caso base pareggio
-					score = minmax(FC, selected, depth +1, !myturn,start);
+				if (B.markCell(d.i,d.j) == yourWin) {//marco la cella e controllo se è uno stato finale, in caso ritorno
 					B.unmarkCell();
-					bscore= min(score,bscore);
+					//print("b");
+					return -1;
 				}
+				if (FC.length <= depth+1){
+					B.unmarkCell();
+					return 0;//controllo per caso base pareggio
+				} 
+				score = score + minmax(B.getFreeCells(), depth +1, !myturn,start);
+				B.unmarkCell();
+				bscore = min(score,bscore);
 			}
 			return bscore;
 		}
@@ -137,13 +153,13 @@ public class RandomPlayer  implements MNKPlayer {
 		long start = System.currentTimeMillis(); // prendo il tempo di inizio esecuzione funzione (per il timer)
 
 		// Uncomment to chech the move timeout
-		 
+		/* 
 		try {
 			Thread.sleep(1000*2*TIMEOUT);
 		} 
 		catch(Exception e) {
 		}
-		
+		*/
 
 		//salva l'ultima markedcell nella board interna
 		if (MC.length > 0) {
@@ -189,9 +205,10 @@ public class RandomPlayer  implements MNKPlayer {
 				}	
 			}	
 		}
+		B.unmarkCell(); //tolgo la cella casuale marcata prima
 		//sium si fa il minmax non ottimizzato per un cazzo giusto per avere una base
 		int score = -99999999,bscore = -99999999;
-		MNKCell bcell = FC[rand.nextInt(FC.length)]; 
+		MNKCell bcell = c; 
 		//best choice, inizializzata per evitare che ritorni vuota se arriva al timeout senza riuscire a computare anche una sola cella
 		for(MNKCell d : FC) {
 			if((System.currentTimeMillis()-start)/5000.0 > TIMEOUT*(99.0/100.0)) { //controllo del timeout
@@ -200,14 +217,18 @@ public class RandomPlayer  implements MNKPlayer {
 				return bcell;//ritorna l'opzione migliore trovata fin'ora
 			}
 			B.markCell(d.i,d.j);
-			score = minmax(FC, d , 0 , true, start);
+			//print(String.valueOf(d.j) +" "+ String.valueOf(d.i));
+			score = minmax(B.getFreeCells() , 0 , false, start);
 			if (bscore < score) {
 				bscore = score;
 				bcell = d;
 			}
+			//print("score :" + String.valueOf(score));
+			//print("cell :"+ String.valueOf(d.j) +" "+ String.valueOf(d.i));
 			B.unmarkCell();
 		}//finito il for ritorna
-		print("outcome 6");
+		B.markCell(bcell.i,bcell.j);
+		//print("win :"+ String.valueOf(bcell.j)+ " "+String.valueOf(bcell.i));
 		return bcell;
 		//il minmax è da testare
 	}
