@@ -86,9 +86,10 @@ public class RandomPlayer  implements MNKPlayer {
 		return false;
 	}
 
+int count=0;
 
-
-	protected int minmax(MNKCell[] FC, int depth, boolean myturn, long start) {
+	protected int minmax(MNKCell[] FC, int depth, boolean myturn, long start, int a, int b) { //ottimizzato con l'alphabeta
+		count++;
 		//print("depth: "+ String.valueOf(depth));
 		if (depth > (int)((B.M * B.N)/3)||(System.currentTimeMillis()-start)/5000.0 > TIMEOUT*(99.0/100.0)) { 
 			//se la profondità supera 1/3 della grandezza complessiva della board oppure il tempo è scaduto non computare più
@@ -106,10 +107,12 @@ public class RandomPlayer  implements MNKPlayer {
 				if (FC.length <= depth+1){
 					B.unmarkCell();
 					return 0;//controllo per caso base pareggio
-				} 
-				score = score + minmax(B.getFreeCells(), depth +1, !myturn,start);
+				}
+				score = score + minmax(B.getFreeCells(), depth +1, !myturn,start,a,b);
 				B.unmarkCell();
 				bscore = max(score,bscore);
+				b = min(b,score);
+				if (b<=a) break; // a cutoff
 			}
 			return bscore;
 		}
@@ -125,9 +128,11 @@ public class RandomPlayer  implements MNKPlayer {
 					B.unmarkCell();
 					return 0;//controllo per caso base pareggio
 				} 
-				score = score + minmax(B.getFreeCells(), depth +1, !myturn,start);
+				score = score + minmax(B.getFreeCells(), depth +1, !myturn,start,a,b);
 				B.unmarkCell();
 				bscore = min(score,bscore);
+				a = max(a,score);
+				if (b<=a) break; // b cutoff
 			}
 			return bscore;
 		}
@@ -151,7 +156,7 @@ public class RandomPlayer  implements MNKPlayer {
    */
 	public MNKCell selectCell(MNKCell[] FC, MNKCell[] MC) { // FC = free cells, MC = marked cells
 		long start = System.currentTimeMillis(); // prendo il tempo di inizio esecuzione funzione (per il timer)
-
+		count = 0;
 		// Uncomment to chech the move timeout
 		/* 
 		try {
@@ -162,9 +167,17 @@ public class RandomPlayer  implements MNKPlayer {
 		*/
 
 		//salva l'ultima markedcell nella board interna
-		if (MC.length > 0) {
+		if (MC.length > 0) { // salva l'ultima markedcell nella game board interna
 			MNKCell c = MC[MC.length -1];
 			B.markCell(c.i, c.j);
+		}
+		else {
+			for (MNKCell q : FC) { // se è la prima mossa in assoluto, per evitare calcoli inutili prende la casella centrale
+				if (q.i ==(int)(B.M/2) && q.j ==(int)(B.N/2)) {
+					B.markCell(q.i, q.j);
+					return q;
+				}
+			}
 		}
 		
 		if (FC.length == 1) return FC[FC.length-1]; // ritorno immediatamente se non devo calcolare nulla (free cells = 1)
@@ -218,7 +231,7 @@ public class RandomPlayer  implements MNKPlayer {
 			}
 			B.markCell(d.i,d.j);
 			//print(String.valueOf(d.j) +" "+ String.valueOf(d.i));
-			score = minmax(B.getFreeCells() , 0 , false, start);
+			score = minmax(B.getFreeCells() , 0 , false, start,0,99999999);
 			if (bscore < score) {
 				bscore = score;
 				bcell = d;
@@ -229,8 +242,8 @@ public class RandomPlayer  implements MNKPlayer {
 		}//finito il for ritorna
 		B.markCell(bcell.i,bcell.j);
 		//print("win :"+ String.valueOf(bcell.j)+ " "+String.valueOf(bcell.i));
+		print(String.valueOf(count));
 		return bcell;
-		//il minmax è da testare
 	}
 
 	public String playerName() {
