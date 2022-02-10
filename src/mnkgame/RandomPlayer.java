@@ -26,7 +26,7 @@ import java.util.Random;
 
 /**
  * not Totally random software player.
- */
+*/
 public class RandomPlayer  implements MNKPlayer {
 	private Random rand;
 	private MNKBoard B;
@@ -87,6 +87,84 @@ public class RandomPlayer  implements MNKPlayer {
 	}
 
 int count=0;
+
+public MNKCell[] AdiacentCells() {
+        
+	MNKCell[] freeCells = B.getFreeCells();
+	MNKCell[] MCell = B.getMarkedCells();
+	MNKCell[] RCell;
+	MNKCell CheckCell;
+	int g = 0;
+	boolean c = false;
+	for (MNKCell d : freeCells) {//Ciclo che si ferma quando non ci sono più celle libere
+		c = false;
+		if((d.i-1) >= 0 && (d.j-1) >= 0 && c == false) { //Controllo se le coordinate della riga sono >= 0 e se quelle della colonna sono >= 0, poi controllo se il booleano c è false
+			CheckCell.MNKCell(d.i-1, d.j-1);   //Imposto le coordinate della cella di controllo      
+			if(contains( MCell, CheckCell )) { //Controllo se la cella CheckCell è in MCell
+				c = true;                      //imposto il booleano di controllo uguale a true
+				RCell[g] = d;                  //imposto le coordinate della cella che andrò a ritornare di indice g
+				g++;                           //incremento g
+			}
+		}
+		if((d.i-1) >= 0 && (d.j) >= 0 && c == false) {
+			CheckCell.MNKCell(d.i-1, d.j); //i = riga; j = colonna; m = lunghezza righe, n = l. colonna            
+			if(contains(MCell, CheckCell )) {
+				c = true;
+				RCell[g] = d;
+				g++;
+			}
+		}
+		if((d.i-1) >= 0 && (d.j+1) < B.N && c == false) {
+			CheckCell.MNKCell(d.i-1, d.j+1); //i = riga; j = colonna; m = lunghezza righe, n = l. colonna            
+			if(contains(MCell, CheckCell )) {
+				c = true;
+				RCell[g] = d;
+				g++;
+			}
+		}
+		if((d.i) >= 0 && (d.j-1) <= 0 && c == false) {
+			CheckCell.MNKCell(d.i, d.j-1); //i = riga; j = colonna; m = lunghezza righe, n = l. colonna            
+			if(contains(MCell, CheckCell )) {
+				c = true;
+				RCell[g] = d;
+				g++;
+			}
+		}
+		if((d.i+1) >= B.M && (d.j-1) <= 0 && c == false) {
+			CheckCell.MNKCell(d.i+1, d.j-1); //i = riga; j = colonna; m = lunghezza righe, n = l. colonna            
+			if(contains(MCell, CheckCell )) {
+				c = true;
+				RCell[g] = d;
+				g++;
+			}
+		}
+		if((d.i+1) >= B.M && (d.j-1) <= 0 && c == false) {
+			CheckCell.MNKCell(d.i+1, d.j-1); //i = riga; j = colonna; m = lunghezza righe, n = l. colonna            
+			if(contains(MCell, CheckCell )) {
+				c = true;
+				RCell[g] = d;
+				g++;
+			}
+		}
+		if((d.i+1) >= B.M && (d.j) <= 0 && c == false) {
+			CheckCell.MNKCell(d.i+1, d.j-1); //i = riga; j = colonna; m = lunghezza righe, n = l. colonna            
+			if(contains(MCell, CheckCell )) {
+				c = true;
+				RCell[g] = d;
+				g++;
+			}
+		}
+		if((d.i+1) >= B.M (d.j+1) <= B.N && c == false) {
+			CheckCell.MNKCell(d.i+1, d.j+1); //i = riga; j = colonna; m = lunghezza righe, n = l. colonna            
+			if(contains(MCell, CheckCell )) {
+				c = true;
+				RCell[g] = d;
+				g++;
+			}
+		} 
+	}
+	return RCell;
+}
 
 	protected int minmax(MNKCell[] FC, int depth, boolean myturn, long start, int a, int b) { //ottimizzato con l'alphabeta
 		count++;
