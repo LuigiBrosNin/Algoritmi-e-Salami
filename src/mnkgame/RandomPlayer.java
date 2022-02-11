@@ -22,6 +22,7 @@
 
 package mnkgame;
 
+import java.util.LinkedList;
 import java.util.Random;
 
 /**
@@ -76,97 +77,59 @@ public class RandomPlayer  implements MNKPlayer {
 	public void print(String a) {
 		System.out.println(a);
 	}
-
-	public boolean contains(MNKCell[] Array, MNKCell cell) {
+/*
+ritorna true se all'interno dell'array di celle trova una cella con le stesse coordinate presenti nel secondo parametro
+*/
+	public boolean contains(MNKCell[] Array, int[][] C) {
 		for (MNKCell mnkcell : Array) {
-			if (mnkcell.i == cell.i && mnkcell.j == cell.j) {
-				return true;
+			for (int k = 0; k < C.length; k++) {
+				if (mnkcell.i == C[k][0] && mnkcell.j == C[k][1]) {
+					return true;
+				}
 			}
 		}
 		return false;
 	}
 
-int count=0;
+	public int[][] initAdMatrix(int[][] C, MNKCell d){
+		C[0][0] = d.i-1;//implementazione orrenda che non abbiamo avuto tempo di scrivere decentemente
+		C[0][1] = d.j-1;//anche per la mancanza di tempo non abbiamo potuto aggiungere il controllo
+		C[1][0] = d.i-1;//che si accerta che le celle adiacenti esistano in modo da diminuire i controlli in contains()
+		C[1][1] = d.j; 
+		C[2][0] = d.i;
+		C[2][1] = d.j;
+		C[3][0] = d.i;
+		C[3][1] = d.j-1;
+		C[4][0] = d.i;
+		C[4][1] = d.j+1;
+		C[5][0] = d.i+1;
+		C[5][1] = d.j-1;
+		C[6][0] = d.i+1;
+		C[6][1] = d.j;
+		C[7][0] = d.i+1;
+		C[7][1] = d.j+1;
+		return C;
+	}
 
-public MNKCell[] AdiacentCells() {
+/*
+ritorna una linkedlist con tutte le celle che sono libere ed adiacenti a una cella marcata :) 
+*/
+public LinkedList<MNKCell> AdiacentCells() {
         
 	MNKCell[] freeCells = B.getFreeCells();
 	MNKCell[] MCell = B.getMarkedCells();
-	MNKCell[] RCell;
-	MNKCell CheckCell;
-	int g = 0;
-	boolean c = false;
+	LinkedList<MNKCell> RCell=new LinkedList<MNKCell>();
+	int[][] CheckCell = new int[8][2];
 	for (MNKCell d : freeCells) {//Ciclo che si ferma quando non ci sono più celle libere
-		c = false;
-		if((d.i-1) >= 0 && (d.j-1) >= 0 && c == false) { //Controllo se le coordinate della riga sono >= 0 e se quelle della colonna sono >= 0, poi controllo se il booleano c è false
-			CheckCell.MNKCell(d.i-1, d.j-1);   //Imposto le coordinate della cella di controllo      
-			if(contains( MCell, CheckCell )) { //Controllo se la cella CheckCell è in MCell
-				c = true;                      //imposto il booleano di controllo uguale a true
-				RCell[g] = d;                  //imposto le coordinate della cella che andrò a ritornare di indice g
-				g++;                           //incremento g
-			}
+		CheckCell = initAdMatrix(CheckCell, d); 
+		if(contains( MCell, CheckCell )) { //Controllo se la cella CheckCell è in MCell
+			RCell.add(d);//se lo è la aggiungo alla lista da ritornare
 		}
-		if((d.i-1) >= 0 && (d.j) >= 0 && c == false) {
-			CheckCell.MNKCell(d.i-1, d.j); //i = riga; j = colonna; m = lunghezza righe, n = l. colonna            
-			if(contains(MCell, CheckCell )) {
-				c = true;
-				RCell[g] = d;
-				g++;
-			}
-		}
-		if((d.i-1) >= 0 && (d.j+1) < B.N && c == false) {
-			CheckCell.MNKCell(d.i-1, d.j+1); //i = riga; j = colonna; m = lunghezza righe, n = l. colonna            
-			if(contains(MCell, CheckCell )) {
-				c = true;
-				RCell[g] = d;
-				g++;
-			}
-		}
-		if((d.i) >= 0 && (d.j-1) <= 0 && c == false) {
-			CheckCell.MNKCell(d.i, d.j-1); //i = riga; j = colonna; m = lunghezza righe, n = l. colonna            
-			if(contains(MCell, CheckCell )) {
-				c = true;
-				RCell[g] = d;
-				g++;
-			}
-		}
-		if((d.i+1) >= B.M && (d.j-1) <= 0 && c == false) {
-			CheckCell.MNKCell(d.i+1, d.j-1); //i = riga; j = colonna; m = lunghezza righe, n = l. colonna            
-			if(contains(MCell, CheckCell )) {
-				c = true;
-				RCell[g] = d;
-				g++;
-			}
-		}
-		if((d.i+1) >= B.M && (d.j-1) <= 0 && c == false) {
-			CheckCell.MNKCell(d.i+1, d.j-1); //i = riga; j = colonna; m = lunghezza righe, n = l. colonna            
-			if(contains(MCell, CheckCell )) {
-				c = true;
-				RCell[g] = d;
-				g++;
-			}
-		}
-		if((d.i+1) >= B.M && (d.j) <= 0 && c == false) {
-			CheckCell.MNKCell(d.i+1, d.j-1); //i = riga; j = colonna; m = lunghezza righe, n = l. colonna            
-			if(contains(MCell, CheckCell )) {
-				c = true;
-				RCell[g] = d;
-				g++;
-			}
-		}
-		if((d.i+1) >= B.M (d.j+1) <= B.N && c == false) {
-			CheckCell.MNKCell(d.i+1, d.j+1); //i = riga; j = colonna; m = lunghezza righe, n = l. colonna            
-			if(contains(MCell, CheckCell )) {
-				c = true;
-				RCell[g] = d;
-				g++;
-			}
-		} 
 	}
 	return RCell;
 }
-
-	protected int minmax(MNKCell[] FC, int depth, boolean myturn, long start, int a, int b) { //ottimizzato con l'alphabeta
+int count=0;
+	protected int minmax(LinkedList<MNKCell> FC, int depth, boolean myturn, long start, int a, int b) { //ottimizzato con l'alphabeta
 		count++;
 		//print("depth: "+ String.valueOf(depth));
 		if (depth > (int)((B.M * B.N)/3)||(System.currentTimeMillis()-start)/5000.0 > TIMEOUT*(99.0/100.0)) { 
@@ -182,11 +145,11 @@ public MNKCell[] AdiacentCells() {
 					//print("a");
 					return 1;
 				}
-				if (FC.length <= depth+1){
+				if (FC.size() <= depth+1){
 					B.unmarkCell();
 					return 0;//controllo per caso base pareggio
 				}
-				score = score + minmax(B.getFreeCells(), depth +1, !myturn,start,a,b);
+				score = score + minmax(AdiacentCells(), depth +1, !myturn,start,a,b);
 				B.unmarkCell();
 				bscore = max(score,bscore);
 				b = min(b,score);
@@ -202,11 +165,11 @@ public MNKCell[] AdiacentCells() {
 					//print("b");
 					return -1;
 				}
-				if (FC.length <= depth+1){
+				if (FC.size() <= depth+1){
 					B.unmarkCell();
 					return 0;//controllo per caso base pareggio
 				} 
-				score = score + minmax(B.getFreeCells(), depth +1, !myturn,start,a,b);
+				score = score + minmax(AdiacentCells(), depth +1, !myturn,start,a,b);
 				B.unmarkCell();
 				bscore = min(score,bscore);
 				a = max(a,score);
@@ -309,7 +272,7 @@ public MNKCell[] AdiacentCells() {
 			}
 			B.markCell(d.i,d.j);
 			//print(String.valueOf(d.j) +" "+ String.valueOf(d.i));
-			score = minmax(B.getFreeCells() , 0 , false, start,0,99999999);
+			score = minmax( AdiacentCells() , 0 , false, start,0,99999999);
 			if (bscore < score) {
 				bscore = score;
 				bcell = d;
