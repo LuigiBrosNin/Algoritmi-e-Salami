@@ -239,7 +239,6 @@ ritorna una linkedlist con tutte le celle che sono libere ed adiacenti a una cel
 			}	
 		}
 		B.unmarkCell(); //tolgo la cella casuale marcata prima
-		//sium si fa il minmax non ottimizzato per un cazzo giusto per avere una base
 		int score = -99999999,bscore = -99999999;
 		MNKCell bcell = c; 
 		//best choice, inizializzata per evitare che ritorni vuota se arriva al timeout senza riuscire a computare anche una sola cella
