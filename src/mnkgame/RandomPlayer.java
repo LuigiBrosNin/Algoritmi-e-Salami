@@ -114,25 +114,23 @@ ritorna true se all'interno dell'array di celle trova una cella con le stesse co
 /*
 ritorna una linkedlist con tutte le celle che sono libere ed adiacenti a una cella marcata :) 
 */
-public LinkedList<MNKCell> AdiacentCells() {
-        
-	MNKCell[] freeCells = B.getFreeCells();
-	MNKCell[] MCell = B.getMarkedCells();
-	LinkedList<MNKCell> RCell=new LinkedList<MNKCell>();
-	int[][] CheckCell = new int[8][2];
-	for (MNKCell d : freeCells) {//Ciclo che si ferma quando non ci sono più celle libere
-		CheckCell = initAdMatrix(CheckCell, d); 
-		if(contains( MCell, CheckCell )) { //Controllo se la cella CheckCell è in MCell
-			RCell.add(d);//se lo è la aggiungo alla lista da ritornare
+	public LinkedList<MNKCell> AdiacentCells() {
+			
+		MNKCell[] freeCells = B.getFreeCells();
+		MNKCell[] MCell = B.getMarkedCells();
+		LinkedList<MNKCell> RCell=new LinkedList<MNKCell>();
+		int[][] CheckCell = new int[8][2];
+		for (MNKCell d : freeCells) {//Ciclo che si ferma quando non ci sono più celle libere
+			CheckCell = initAdMatrix(CheckCell, d); 
+			if(contains( MCell, CheckCell )) { //Controllo se la cella CheckCell è in MCell
+				RCell.add(d);//se lo è la aggiungo alla lista da ritornare
+			}
 		}
+		return RCell;
 	}
-	return RCell;
-}
-int count=0;
-	protected int minmax(LinkedList<MNKCell> FC, int depth, boolean myturn, long start, int a, int b) { //ottimizzato con l'alphabeta
-		count++;
-		//print("depth: "+ String.valueOf(depth));
-		if (depth > (int)((B.M * B.N)/3)||(System.currentTimeMillis()-start)/5000.0 > TIMEOUT*(99.0/100.0)) { 
+
+	protected int minmax(MNKCell[] FC, int depth, boolean myturn, long start, int a, int b) { //ottimizzato con l'alphabeta
+		if (depth > (int)((B.M * B.N)/3)||(System.currentTimeMillis()-start)/9000.0 > TIMEOUT*(99.0/100.0)) { 
 			//se la profondità supera 1/3 della grandezza complessiva della board oppure il tempo è scaduto non computare più
 			return 0;
 		}
@@ -142,14 +140,13 @@ int count=0;
 			for (MNKCell d : FC) { 
 				if (B.markCell(d.i,d.j) == myWin) {//marco la cella e controllo se è uno stato finale, in caso ritorno
 					B.unmarkCell();
-					//print("a");
 					return 1;
 				}
-				if (FC.size() <= depth+1){
+				if (FC.length <= depth+1){
 					B.unmarkCell();
 					return 0;//controllo per caso base pareggio
 				}
-				score = score + minmax(AdiacentCells(), depth +1, !myturn,start,a,b);
+				score = score + minmax(B.getFreeCells(), depth +1, !myturn,start,a,b);
 				B.unmarkCell();
 				bscore = max(score,bscore);
 				b = min(b,score);
@@ -162,14 +159,13 @@ int count=0;
 			for (MNKCell d : FC) {
 				if (B.markCell(d.i,d.j) == yourWin) {//marco la cella e controllo se è uno stato finale, in caso ritorno
 					B.unmarkCell();
-					//print("b");
 					return -1;
 				}
-				if (FC.size() <= depth+1){
+				if (FC.length <= depth+1){
 					B.unmarkCell();
 					return 0;//controllo per caso base pareggio
 				} 
-				score = score + minmax(AdiacentCells(), depth +1, !myturn,start,a,b);
+				score = score + minmax(B.getFreeCells(), depth +1, !myturn,start,a,b);
 				B.unmarkCell();
 				bscore = min(score,bscore);
 				a = max(a,score);
@@ -178,26 +174,13 @@ int count=0;
 			return bscore;
 		}
 	}
-	/**
-	 * Selects a position among those listed in the <code>FC</code> array.
-   * <p>
-   * 1 Selects a winning cell (if any) from <code>FC</code>, otherwise
-   * 2 selects a cell (if any) that prevents the adversary to win 
-   * with his next move. 
-   * TO DO:
-   * 3 - lanci alpha beta pruning, ma ottimizzato con alcune cose
-    fatto a - depth limitata (dinamica, basata su grandezza scacchiera)
-    fatto b - timeout se ci mette troppo gioca a caso (ricorsivo, passa timeout -1 per 1 secondo di scarto per chiudere tutte le ricorsioni)
-    c - range limitato di caselle da controllare (giocando ottimizzato si gioca sempre su caselle adiacenti quindi stonks)
-    d - per il punto c trovare altri modi maybe per ottimizzare scegliere il migliore se non aumenta la complessità
-   * 
-   * If all previous cases do not apply, selects
-   * a random cell in <code>FC</code>.
-	 * </p>
+	/*
+
+
+
    */
 	public MNKCell selectCell(MNKCell[] FC, MNKCell[] MC) { // FC = free cells, MC = marked cells
 		long start = System.currentTimeMillis(); // prendo il tempo di inizio esecuzione funzione (per il timer)
-		count = 0;
 		// Uncomment to chech the move timeout
 		/* 
 		try {
@@ -226,13 +209,11 @@ int count=0;
 		// controllo per mossa finale vincente
 		for(MNKCell d : FC) {
 			// tempo limitato
-			if((System.currentTimeMillis()-start)/5000.0 > TIMEOUT*(99.0/100.0)) { //controllo del timeout
+			if((System.currentTimeMillis()-start)/9000.0 > TIMEOUT*(99.0/100.0)) { //controllo del timeout
 				MNKCell c = FC[rand.nextInt(FC.length)];
 				B.markCell(c.i,c.j);
-				print("outcome 1");
 				return c;
 			} else if(B.markCell(d.i,d.j) == myWin) {
-				print("outcome 2");
 				return d;  
 			} else {
 				B.unmarkCell();
@@ -243,8 +224,7 @@ int count=0;
 		B.markCell(c.i,c.j); //marco la cella casuale per calcoli interni e successivi
 		
 		for(int k = 0; k < FC.length; k++) {
-      		if((System.currentTimeMillis()-start)/5000.0 > TIMEOUT*(99.0/100.0)) { //ritorna random se timeout
-				print("outcome 3");
+      		if((System.currentTimeMillis()-start)/9000.0 > TIMEOUT*(99.0/100.0)) { //ritorna random se timeout
 				return FC[pos];
 			} else if(k != pos) {     
 				MNKCell d = FC[k];
@@ -252,7 +232,6 @@ int count=0;
 					B.unmarkCell();        // undo adversary move
 					B.unmarkCell();	       // undo my move (altrimenti vado a marcare il segno sbagliato penso)
 					B.markCell(d.i,d.j);   // select his winning position
-					print("outcome 4");
 					return d;							 // return his winning position
 				} else {
 					B.unmarkCell();	       // undo adversary move to try a new one
@@ -264,26 +243,21 @@ int count=0;
 		int score = -99999999,bscore = -99999999;
 		MNKCell bcell = c; 
 		//best choice, inizializzata per evitare che ritorni vuota se arriva al timeout senza riuscire a computare anche una sola cella
-		for(MNKCell d : FC) {
-			if((System.currentTimeMillis()-start)/5000.0 > TIMEOUT*(99.0/100.0)) { //controllo del timeout
+		LinkedList<MNKCell> list=AdiacentCells();
+		for(MNKCell d : list) {
+			if((System.currentTimeMillis()-start)/9000.0 > TIMEOUT*(99.0/100.0)) { //controllo del timeout
 				B.markCell(bcell.i,bcell.j);
-				print("outcome 5");
 				return bcell;//ritorna l'opzione migliore trovata fin'ora
 			}
 			B.markCell(d.i,d.j);
-			//print(String.valueOf(d.j) +" "+ String.valueOf(d.i));
-			score = minmax( AdiacentCells() , 0 , false, start,0,99999999);
+			score = minmax( B.getFreeCells() , 0 , false, start,0,99999999);
 			if (bscore < score) {
 				bscore = score;
 				bcell = d;
 			}
-			//print("score :" + String.valueOf(score));
-			//print("cell :"+ String.valueOf(d.j) +" "+ String.valueOf(d.i));
 			B.unmarkCell();
 		}//finito il for ritorna
 		B.markCell(bcell.i,bcell.j);
-		//print("win :"+ String.valueOf(bcell.j)+ " "+String.valueOf(bcell.i));
-		print(String.valueOf(count));
 		return bcell;
 	}
 
