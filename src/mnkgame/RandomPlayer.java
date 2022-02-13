@@ -94,18 +94,25 @@ ritorna true se all'interno dell'array di celle trova una cella con le stesse co
 	public int[][] initAdMatrix(int[][] C, MNKCell d){
 		C[0][0] = d.i-1;//implementazione orrenda che non abbiamo avuto tempo di scrivere decentemente
 		C[0][1] = d.j-1;//anche per la mancanza di tempo non abbiamo potuto aggiungere il controllo
-		C[1][0] = d.i-1;//che si accerta che le celle adiacenti esistano in modo da diminuire i controlli in contains()
+						//che si accerta che le celle adiacenti esistano in modo da diminuire i controlli in contains()
+		C[1][0] = d.i-1;
 		C[1][1] = d.j; 
-		C[2][0] = d.i;
-		C[2][1] = d.j;
+		
+		C[2][0] = d.i-1;
+		C[2][1] = d.j+1;
+		
 		C[3][0] = d.i;
 		C[3][1] = d.j-1;
+		
 		C[4][0] = d.i;
 		C[4][1] = d.j+1;
+		
 		C[5][0] = d.i+1;
 		C[5][1] = d.j-1;
+		
 		C[6][0] = d.i+1;
 		C[6][1] = d.j;
+		
 		C[7][0] = d.i+1;
 		C[7][1] = d.j+1;
 		return C;
