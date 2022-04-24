@@ -31,6 +31,7 @@ import java.util.Random;
 public class RandomPlayer  implements MNKPlayer {
 	// default privates
 	private Random rand;
+	// board ausiliaria per effettuare calcoli
 	private MNKBoard B;
 	private MNKGameState myWin;
 	private MNKGameState yourWin;
