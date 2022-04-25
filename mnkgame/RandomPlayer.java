@@ -110,6 +110,38 @@ public class RandomPlayer  implements MNKPlayer {
 	private long currentTime(){
 		return System.currentTimeMillis();
 	}
+
+	// funzione da scrivere, implementazione temporanea
+	private int evaluate(myTree<MNKBoard> t, int depth) {
+		return 0;
+	}
+
+	// true indica il turno del bot mentre false quello dell'avversario
+	private MinmaxMove abPruning(myTree<MNKBoard> tree, bool myTurn, int alpha, int beta, int depth) {
+		int eval;
+		if(depth == 0 || tree.isLeaf())
+			eval = evaluate(tree.val, depth);
+		else if(myTurn) {
+			eval = (int)Double.NEGATIVE_INFINITY;
+			for(myTree<MNKBoard> c : tree.childs){
+				eval = max(eval, abPruning(c, false, alpha, beta, depth-1));
+				alpha = max(eval, alpha);
+				if (beta <= alpha)
+					break;
+			}
+		}
+		else {
+			eval = (int)Double.POSITIVE_INFINITY;
+			for (myTree<MNKBoard> c : tree.childs) {
+				eval = min(eval, abPruning(c, true, alpha, beta, depth-1));
+				beta = min (eval, beta);
+				if (beta <= alpha)
+					break;
+			}
+		}
+		tree.val = eval;
+		return eval;
+	}
 	/**
 	 * 
 	 * @param FC free cells array
@@ -171,8 +203,6 @@ public class RandomPlayer  implements MNKPlayer {
 	 * 
 	 * simple copying function for creating new boards for us to save in the gameTree
 	 * 
-	 * O(N*M)
-	 * 
 	 * @param toCopy la board da copiare <code> B </code> che passeremo quasi sempre in questo contesto
 	 * @return una copia della board passata per parametro
 	 */
@@ -185,16 +215,7 @@ public class RandomPlayer  implements MNKPlayer {
 	   return inCopy;
    }
 
-
-	public MNKCell abPruning(MNKCell[] FC, MNKCell[] MC){
-
-		// temporal return
-		return new MNKCell(-1,-1, yourCell);
-	}
-
 	public MNKCell selectCell(MNKCell[] FC, MNKCell[] MC) {
-		if (FC.length == 1) return FC[0]; // ritorno immediatamente se non devo calcolare nulla (free cells = 1)
-
 		long start = currentTime(); // prendo il tempo di inizio esecuzione funzione (per il timer)
 		// Uncomment to check the move timeout
 		/* 
@@ -216,10 +237,12 @@ public class RandomPlayer  implements MNKPlayer {
 			//iniziamo a generare l'albero prima di ritornare per usare il tempo a disposizione
 			RandomPlayer.node = new myTree<MNKBoard>(copyBoard(B)); // creo l'albero interno
 
-			abPruning(FC, MC);
+			abPruning(RandomPlayer.node, true, (int)Double.NEGATIVE_INFINITY, (int)Double.POSITIVE_INFINITY, RandomPlayer.DEPTH);
 
 			return new MNKCell((int)(B.M/2), (int)(B.N/2), myCell);
 		}
+		
+		if (FC.length == 1) return FC[0]; // ritorno immediatamente se non devo calcolare nulla (free cells = 1)
 
 		MNKCell c;
 
