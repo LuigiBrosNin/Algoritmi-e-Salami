@@ -1,5 +1,10 @@
-package mnkgame;
 
+
+/*
+
+ a simple class used for storing evaluations results
+
+*/
 public class MinmaxMove
 {
     public int i;

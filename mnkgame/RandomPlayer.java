@@ -20,7 +20,7 @@
  *  along with this file.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package mnkgame;
+
 
 import java.util.LinkedList;
 import java.util.Random;
@@ -75,9 +75,9 @@ public class RandomPlayer  implements MNKPlayer {
 			}
 		}
 		
-		this.M = M;
-        this.N = N;
-        this.K = K;
+		RandomPlayer.M = M;
+        RandomPlayer.N = N;
+        RandomPlayer.K = K;
 
 		// Uncomment to chech the initialization timeout
 		/* 
@@ -131,12 +131,12 @@ public class RandomPlayer  implements MNKPlayer {
 			return new MNKCell((int)(B.M/2), (int)(B.N/2), myCell);
 		}
 		
-		if (FC.length == 1) return FC[FC.length-1]; // ritorno immediatamente se non devo calcolare nulla (free cells = 1)
+		if (FC.length == 1) return FC[0]; // ritorno immediatamente se non devo calcolare nulla (free cells = 1)
 
 		return new MNKCell((int)(B.M/2), (int)(B.N/2), myCell);
 	}
 
 	public String playerName() {
-		return "SIUM";
+		return "AAAAAH";
 	}
 }

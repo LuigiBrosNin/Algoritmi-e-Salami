@@ -20,7 +20,7 @@
  *  along with this file.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package mnkgame;
+
 
 import java.lang.IndexOutOfBoundsException;
 import java.lang.IllegalStateException;

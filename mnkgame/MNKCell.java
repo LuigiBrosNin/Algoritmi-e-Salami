@@ -20,7 +20,7 @@
  *  along with this file.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package mnkgame;
+
 
 /**
  * Describes the state of a cell in the <code>MNKBoard</code>.
