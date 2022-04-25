@@ -171,6 +171,8 @@ public class RandomPlayer  implements MNKPlayer {
 	 * 
 	 * simple copying function for creating new boards for us to save in the gameTree
 	 * 
+	 * O(N*M)
+	 * 
 	 * @param toCopy la board da copiare <code> B </code> che passeremo quasi sempre in questo contesto
 	 * @return una copia della board passata per parametro
 	 */
@@ -191,6 +193,8 @@ public class RandomPlayer  implements MNKPlayer {
 	}
 
 	public MNKCell selectCell(MNKCell[] FC, MNKCell[] MC) {
+		if (FC.length == 1) return FC[0]; // ritorno immediatamente se non devo calcolare nulla (free cells = 1)
+
 		long start = currentTime(); // prendo il tempo di inizio esecuzione funzione (per il timer)
 		// Uncomment to check the move timeout
 		/* 
@@ -216,8 +220,6 @@ public class RandomPlayer  implements MNKPlayer {
 
 			return new MNKCell((int)(B.M/2), (int)(B.N/2), myCell);
 		}
-		
-		if (FC.length == 1) return FC[0]; // ritorno immediatamente se non devo calcolare nulla (free cells = 1)
 
 		MNKCell c;
 
