@@ -40,7 +40,7 @@ public class RandomPlayer  implements MNKPlayer {
 	// added privates
 	private static myTree<MNKBoard> node;
 	private MNKCellState myCell;
-    private MNKCellState enemyCell;    
+    private MNKCellState yourCell;    
 	private static int M;
     private static int N;
     private static int K;
@@ -62,7 +62,7 @@ public class RandomPlayer  implements MNKPlayer {
 		TIMEOUT = timeout_in_secs;	
 		
 		myCell = first ? MNKCellState.P1 : MNKCellState.P2;
-        enemyCell = first ? MNKCellState.P2 : MNKCellState.P1;
+        yourCell = first ? MNKCellState.P2 : MNKCellState.P1;
         DEPTH=M*N;
 		// il numero di nodi e foglie da calcolare massimo sono (M*N-1) * (M*N-2) ... , che in casi troppo grandi non riuscirà mai a fare in 10 secondi
 		// quindi riduciamo la depth fino ad un numero accettabile e somewhat calcolabile per risparmiare calcoli
@@ -89,27 +89,110 @@ public class RandomPlayer  implements MNKPlayer {
 		*/
 	}
 
-	public int min(int a,int b) {
+	private int min(int a,int b) {
 		if (a>b) {
 			return b;
 		}
 		else return a;
 	}
 
-	public int max(int a,int b) {
+	private int max(int a,int b) {
 		if (a>b) {
 			return a;
 		}
 		else return b;
 	}
 
-	public void print(String a) {
+	private void print(String a) {
 		System.out.println(a);
 	}
 
-	public MNKCell selectCell(MNKCell[] FC, MNKCell[] MC) { // FC = free cells, MC = marked cells
-		long start = System.currentTimeMillis(); // prendo il tempo di inizio esecuzione funzione (per il timer)
-		// Uncomment to chech the move timeout
+	private long currentTime(){
+		return System.currentTimeMillis();
+	}
+	/**
+	 * 
+	 * @param FC free cells array
+	 * @return cell that makes us win the game in this move, otherwise returns an invalid enemycell
+	 */
+	private MNKCell selectWinningCell (MNKCell[] FC){
+				
+		// Check whether there is single move win 
+		for(MNKCell d : FC) {
+			if(B.markCell(d.i,d.j) == myWin) {
+				return d;
+			} else {
+				B.unmarkCell();
+			}
+		}
+		// se nessuna cella è vincente, ritorna una cella invalida (nemica per il controllo validità)
+		return new MNKCell(-1,-1, yourCell);
+	}
+
+	/**
+	 * 
+	 * @param FC free cells array
+	 * @return cell that makes us lose the game in the next move, otherwise returns an invalid enemycell
+	 */
+	private MNKCell preventLoss (MNKCell[] FC){
+
+		B.markCell(FC[1].i, FC[1].j);
+		MNKCell c = FC[0]; // random move
+
+		// mark the random position and check if it's the winning position	
+		if(B.markCell(c.i,c.j) == yourWin){
+			// sincronizzo la board interna e ritorno
+			B.unmarkCell();
+			B.unmarkCell();
+			B.markCell(c.i, c.i);
+			return c; 
+		}
+
+		//sincronizzo la board per il for
+		B.unmarkCell();
+		B.unmarkCell();
+		B.markCell(c.i, c.i);
+
+		for(MNKCell d : FC) {
+			if (B.markCell(d.i, d.j) == yourWin) {
+				B.unmarkCell(); // undo adversary move
+				B.unmarkCell(); // undo my move
+				B.markCell(d.i, d.j); // select his winning position
+				return d; // return his winning position
+			} else {
+				B.unmarkCell(); // undo adversary move to try a new one
+			}
+		}
+		// se nessuna cella è vincente, ritorna una cella invalida (nemica per il controllo validità)
+		return new MNKCell(-1,-1, yourCell);
+	}
+
+	/**
+	 * 
+	 * simple copying function for creating new boards for us to save in the gameTree
+	 * 
+	 * @param toCopy la board da copiare <code> B </code> che passeremo quasi sempre in questo contesto
+	 * @return una copia della board passata per parametro
+	 */
+    private MNKBoard copyBoard(MNKBoard toCopy) {
+	   MNKCell[] MCs = toCopy.getMarkedCells();
+	   MNKBoard inCopy = new MNKBoard(toCopy.M, toCopy.N, toCopy.K);
+	   for (MNKCell MC : MCs) {
+		   inCopy.markCell(MC.i, MC.j);
+	   }
+	   return inCopy;
+   }
+
+
+	public MNKCell abPruning(MNKCell[] FC, MNKCell[] MC){
+
+		// temporal return
+		return new MNKCell(-1,-1, yourCell);
+	}
+
+	public MNKCell selectCell(MNKCell[] FC, MNKCell[] MC) {
+		long start = currentTime(); // prendo il tempo di inizio esecuzione funzione (per il timer)
+		// Uncomment to check the move timeout
 		/* 
 		try {
 			Thread.sleep(1000*2*TIMEOUT);
@@ -126,14 +209,32 @@ public class RandomPlayer  implements MNKPlayer {
 		else {
 			// se è la prima mossa in assoluto, per evitare calcoli inutili prende la casella centrale
 			B.markCell((int)(B.M/2), (int)(B.N/2));
-			//iniziare a generare l'albero prima di ritornare
+			//iniziamo a generare l'albero prima di ritornare per usare il tempo a disposizione
+			RandomPlayer.node = new myTree<MNKBoard>(copyBoard(B)); // creo l'albero interno
+
+			abPruning(FC, MC);
 
 			return new MNKCell((int)(B.M/2), (int)(B.N/2), myCell);
 		}
 		
 		if (FC.length == 1) return FC[0]; // ritorno immediatamente se non devo calcolare nulla (free cells = 1)
 
-		return new MNKCell((int)(B.M/2), (int)(B.N/2), myCell);
+		MNKCell c;
+
+		// cerco una casella vincente
+		c = selectWinningCell(FC);
+		
+		// se non trovo una casella vincente ne cerco una perdente
+		if (c.state == yourCell) c = preventLoss(FC);
+
+		// se ho trovato una cella valida, la ritorno
+		if (c.state != yourCell) return c;
+
+		//inizio a calcolare la mossa migliore
+
+
+		//return temporaneo invalido
+		return new MNKCell(-1,-1, yourCell);
 	}
 
 	public String playerName() {
