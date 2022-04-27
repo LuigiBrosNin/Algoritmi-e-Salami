@@ -120,12 +120,15 @@ public class RandomPlayer  implements MNKPlayer {
 			myMenace = 1;
 			yourMenace = 1;
 			for(int j=0; j<N; j+=1) {
-				if(t.val.cellState(i, j) == MNKCellState.P1 ) {
+				if(t.val.cellState(i, j) == MNKCellState.P1
+				|| (t.val.cellState(i, j+1) == MNKCellState.P1 && j+1<N)
+				 ) {
 					myValue = myValue + myMenace;
 					myMenace = myMenace * 10;
 					yourMenace = 1;
 				}
-				if(t.val.cellState(i, j) == MNKCellState.P2) {
+				if(t.val.cellState(i, j) == MNKCellState.P2
+				|| (t.val.cellState(i, j+1) == MNKCellState.P1 && j+1<N)) {
 					yourValue = yourValue + yourMenace;
 					yourMenace = yourMenace * 10;
 					myMenace = 1;
@@ -149,12 +152,14 @@ public class RandomPlayer  implements MNKPlayer {
 			myMenace = 1;
 			yourMenace = 1;
 			for(int j=0; j<N; j+=1) {
-				if(t.val.cellState(j, i) == MNKCellState.P1) {
+				if(t.val.cellState(j, i) == MNKCellState.P1
+				|| (t.val.cellState(j+1, i) == MNKCellState.P1 && j+1<M) {
 					myValue = myValue + myMenace;
 					myMenace = myMenace * 10;
 					yourMenace = 1;
 				}
-				if(t.val.cellState(j, i) == MNKCellState.P2) {
+				if(t.val.cellState(j, i) == MNKCellState.P2
+				|| (t.val.cellState(j+1, i) == MNKCellState.P2 && j+1<M)) {
 					yourValue = yourValue + yourMenace;
 					yourMenace = yourMenace * 10;
 					myMenace = 1;
@@ -179,25 +184,44 @@ public class RandomPlayer  implements MNKPlayer {
 			myMenace = 1; yourMenace = 1;
 			if(min(N-i, M) >= K){
 				for(int j=0; j<min(N-i, M); j+=1){
-					if (isRight)
+					if (isRight) {
 						y = j+i;
-					else
-						y = N-1-j-i;
-					if(t.val.cellState(j, y) == MNKCellState.P1) {
+						if(t.val.cellState(j, y) == MNKCellState.P1
+						|| (t.val.cellState(j+1, y) == MNKCellState.P1 && j+1<M && y<N) {
 						myValue = myValue + myMenace;
 						myMenace = myMenace * 10;
 						yourMenace = 1;
-					}
-					else if(t.val.cellState(j, y) == MNKCellState.P2) {
-						yourValue = yourValue + yourMenace;
-						yourMenace = yourMenace * 10;
-						myMenace = 1;
+						}
+						else if(t.val.cellState(j, y) == MNKCellState.P2
+						|| (t.val.cellState(j+1, y) == MNKCellState.P2 && j+1<M && y<N)) {
+							yourValue = yourValue + yourMenace;
+							yourMenace = yourMenace * 10;
+							myMenace = 1;
+						}
+						else {
+							myMenace = 1;
+							yourMenace = 1;
+						}
 					}
 					else {
-						myMenace = 1;
+						y = N-1-j-i;
+						if(t.val.cellState(i, y) == MNKCellState.P1
+						|| (t.val.cellState(i+1, y) == MNKCellState.P1 && i+1<M && y>N) {
+						myValue = myValue + myMenace;
+						myMenace = myMenace * 10;
 						yourMenace = 1;
+						}
+						else if(t.val.cellState(j, y) == MNKCellState.P2
+						|| (t.val.cellState(j+1, y) == MNKCellState.P2 && j+1<M && y>N)) {
+							yourValue = yourValue + yourMenace;
+							yourMenace = yourMenace * 10;
+							myMenace = 1;
+						}
+						else {
+							myMenace = 1;
+							yourMenace = 1;
+						}
 					}
-				}
 			}
 		}
 		checkScore = myValue - yourValue
@@ -207,31 +231,54 @@ public class RandomPlayer  implements MNKPlayer {
 	// funzione di controllo di minaccia amica/nemica diagonale con offset verticale
 	private int DiagonalCheckVerticalOffset(myTree<MNKBoard> t,  boolean isRight) {
 		int myValue = 0, yourValue = 0, myMenace = 1, yourMenace = 1;
-		int y;
+		int x;
 		int checkScore;
 
 		for(int i=0; i<M; i+=1) {
 			myMenace = 1; yourMenace = 1;
 			if(min(M-i, N) >= K){
 				for(int j=0; j<min(M-i, N); j+=1){
-					if (isRight)
-						y = j;
-					else
-						y = N-1-j;
-					if(t.val.cellState(j+i, y) == MNKCellState.P1) {
+					if (isRight) {
+						z = j+i;
+						if(t.val.cellState(j+i, y) == MNKCellState.P1 &&
+						|| (t.val.cellState(j+i+1, y) == MNKCellState.P1 && j+i+1<M && ) {
 						myValue = myValue + myMenace;
 						myMenace = myMenace * 10;
 						yourMenace = 1;
-					}
-					else if(t.val.cellState(j+i, y) == MNKCellState.P2) {
+						}
+						else if(t.val.cellState(j+i, y) == MNKCellState.P2
+						|| t.val.cellState(j+i+1, y) == MNKCellState.P2 && j+i+1<M && y) {
 						yourValue = yourValue + yourMenace;
 						yourMenace = yourMenace * 10;
 						myMenace = 1;
+						}
+						else {
+							myMenace = 1;
+							yourMenace = 1;
+						}
 					}
 					else {
-						myMenace = 1;
-						yourMenace = 1;
+						y = N-1-j;
+						{
+							if(t.val.cellState(j+i, y) == MNKCellState.P1 &&
+							|| (t.val.cellState(j+i+1, y) == MNKCellState.P1 && )) {
+							myValue = myValue + myMenace;
+							myMenace = myMenace * 10;
+							yourMenace = 1;
+							}
+							else if(t.val.cellState(j+i, y) == MNKCellState.P2
+							|| t.val.cellState(j+i+1, y) == MNKCellState.P2) {
+							yourValue = yourValue + yourMenace;
+							yourMenace = yourMenace * 10;
+							myMenace = 1;
+							}
+							else {
+								myMenace = 1;
+								yourMenace = 1;
+							}
+						}
 					}
+
 				}
 			}
 		}
