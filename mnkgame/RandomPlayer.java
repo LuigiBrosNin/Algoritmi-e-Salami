@@ -111,9 +111,162 @@ public class RandomPlayer  implements MNKPlayer {
 		return System.currentTimeMillis();
 	}
 
+	// funzione di controllo di minaccia amica/nemica orizzontale
+	private int horizontalCheck(myTree<MNKBoard> t) {
+		int myValue = 0, yourValue = 0, myMenace = 1, yourMenace = 1;
+		int checkScore;
+
+		for(int i=0; i<M; i+=1) {
+			myMenace = 1;
+			yourMenace = 1;
+			for(int j=0; j<N; j+=1) {
+				if(t.val.cellState(i, j) == MNKCellState.P1 ) {
+					myValue = myValue + myMenace;
+					myMenace = myMenace * 10;
+					yourMenace = 1;
+				}
+				if(t.val.cellState(i, j) == MNKCellState.P2) {
+					yourValue = yourValue + yourMenace;
+					yourMenace = yourMenace * 10;
+					myMenace = 1;
+				}
+				else {
+					myMenace = 1;
+					yourMenace = 1;
+				}
+			}
+		}
+		checkScore = myValue - yourValue
+		return checkScore;
+	}
+
+	// funzione di controllo di minaccia amica/nemica verticale
+	private int verticalCheck(myTree<MNKBoard> t) {
+		int myValue = 0, yourValue = 0, myMenace = 1, yourMenace = 1;
+		int checkScore;
+
+		for(int i=0; i<M; i+=1) {
+			myMenace = 1;
+			yourMenace = 1;
+			for(int j=0; j<N; j+=1) {
+				if(t.val.cellState(j, i) == MNKCellState.P1) {
+					myValue = myValue + myMenace;
+					myMenace = myMenace * 10;
+					yourMenace = 1;
+				}
+				if(t.val.cellState(j, i) == MNKCellState.P2) {
+					yourValue = yourValue + yourMenace;
+					yourMenace = yourMenace * 10;
+					myMenace = 1;
+				}
+				else {
+					myMenace = 1;
+					yourMenace = 1;
+				}
+			}
+		}
+		checkScore = myValue - yourValue
+		return checkScore;
+	}
+
+	// funzione di controllo di minaccia amica/nemica diagonale con offset orizzontale
+	private int DiagonalCheckHorizontalOffset(myTree<MNKBoard> t,  boolean isRight) {
+		int myValue = 0, yourValue = 0, myMenace = 1, yourMenace = 1;
+		int y;
+		int checkScore;
+
+		for(int i=0; i<N; i+=1) {
+			myMenace = 1; yourMenace = 1;
+			if(min(N-i, M) >= K){
+				for(int j=0; j<min(N-i, M); j+=1){
+					if (isRight)
+						y = j+i;
+					else
+						y = N-1-j-i;
+					if(t.val.cellState(j, y) == MNKCellState.P1) {
+						myValue = myValue + myMenace;
+						myMenace = myMenace * 10;
+						yourMenace = 1;
+					}
+					else if(t.val.cellState(j, y) == MNKCellState.P2) {
+						yourValue = yourValue + yourMenace;
+						yourMenace = yourMenace * 10;
+						myMenace = 1;
+					}
+					else {
+						myMenace = 1;
+						yourMenace = 1;
+					}
+				}
+			}
+		}
+		checkScore = myValue - yourValue
+		return checkScore;
+	}
+
+	// funzione di controllo di minaccia amica/nemica diagonale con offset verticale
+	private int DiagonalCheckVerticalOffset(myTree<MNKBoard> t,  boolean isRight) {
+		int myValue = 0, yourValue = 0, myMenace = 1, yourMenace = 1;
+		int y;
+		int checkScore;
+
+		for(int i=0; i<M; i+=1) {
+			myMenace = 1; yourMenace = 1;
+			if(min(M-i, N) >= K){
+				for(int j=0; j<min(M-i, N); j+=1){
+					if (isRight)
+						y = j;
+					else
+						y = N-1-j;
+					if(t.val.cellState(j+i, y) == MNKCellState.P1) {
+						myValue = myValue + myMenace;
+						myMenace = myMenace * 10;
+						yourMenace = 1;
+					}
+					else if(t.val.cellState(j+i, y) == MNKCellState.P2) {
+						yourValue = yourValue + yourMenace;
+						yourMenace = yourMenace * 10;
+						myMenace = 1;
+					}
+					else {
+						myMenace = 1;
+						yourMenace = 1;
+					}
+				}
+			}
+		}
+		checkScore = myValue - yourValue
+		return checkScore;
+	}
+
 	// funzione da scrivere, implementazione temporanea
-	private int evaluate(myTree<MNKBoard> t, int depth) {
-		return 0;
+	private int evaluate(myTree<MNKBoard> t, boolean myTurn) {
+		int cellScore = 0;
+
+		// controllo orizzontale
+		cellscore += horizontalCheck(t);
+		// controllo verticale
+		cellscore += verticalCheck(t);
+
+		if(M >= K && N >= K) {
+			// controllo diagonale dx, offset orizzontale
+			cellscore += DiagonalCheckHorizontalOffset(t, true);
+
+			// controllo diagonale dx, offset verticale
+			cellscore += DiagonalCheckVerticalOffset(t, true);
+			
+			// controllo diagonale sx, offset orizzontale
+			cellscore += DiagonalCheckHorizontalOffset(t, false);
+
+			// controllo diagonale sx, offset verticale
+			cellscore += DiagonalCheckVerticalOffset(t, false);
+			
+		}
+
+		if (myTurn)
+			return(cellScore);
+		else
+			return(0-cellScore);
 	}
 
 	// true indica il turno del bot mentre false quello dell'avversario
