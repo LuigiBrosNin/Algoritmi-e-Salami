@@ -256,13 +256,13 @@ public class RandomPlayer implements MNKPlayer {
 						y = N-1-j;
 						{
 							if(t.val.cellState(x, y) == MNKCellState.P1 &&
-							|| (t.val.cellState(x+1, y-1) == MNKCellState.P1 && j+i+1<M && y>N)) {
+							|| (t.val.cellState(x+1, y-1) == MNKCellState.P1 && x+1<M && y>N)) {
 							myValue = myValue + myMenace;
 							myMenace = myMenace * 10;
 							yourMenace = 1;
 							}
 							else if(t.val.cellState(x, y) == MNKCellState.P2
-							|| t.val.cellState(x+1, y-1) == MNKCellState.P2 && j+i+1<M && y>N)) {
+							|| t.val.cellState(x+1, y-1) == MNKCellState.P2 && x+1<M && y>N)) {
 							yourValue = yourValue + yourMenace;
 							yourMenace = yourMenace * 10;
 							myMenace = 1;
