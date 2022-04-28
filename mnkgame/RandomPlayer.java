@@ -20,6 +20,7 @@
  *  along with this file.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Random;
 
@@ -314,6 +315,28 @@ public class RandomPlayer implements MNKPlayer {
 		else
 			return (-cellscore);
 	}
+
+	private int getChilds(myTree<MNKBoard> tree, MNKCell[] MC){
+		HashSet<MNKCell> list = new HashSet<MNKCell>();
+		int pos=0;
+		for (MNKCell c : MC) {
+			//aggiungo le caselle esistenti
+			// angles
+			if (c.i != M-1 && c.j != N-1) list.add(new MNKCell(c.i-1, c.j+1)); //dwn r
+			if (c.i != 0 && c.j != 0)     list.add(new MNKCell(c.i+1, c.j+1)); // up r
+			if (c.i != M-1 && c.j != 0)   list.add(new MNKCell(c.i-1, c.j-1)); //dwn l
+			if (c.i != 0 && c.j != N-1)   list.add(new MNKCell(c.i+1, c.j-1)); // up l
+			// arrows
+			if (c.i != 0)                 list.add(new MNKCell(c.i+1, c.j)); // up
+			if (c.i != M-1)               list.add(new MNKCell(c.i-1, c.j)); // dwn
+			if (c.j != 0)                 list.add(new MNKCell(c.i, c.j-1)); // l
+			if (c.j != N-1)               list.add(new MNKCell(c.i, c.j+1)); // r
+		}
+		//TOFINISH
+
+		return -1;
+	}
+
 
 	// true indica il turno del bot mentre false quello dell'avversario
 	private MinmaxMove abPruning(myTree<MNKBoard> tree, boolean myTurn, int alpha, int beta, int depth) {
