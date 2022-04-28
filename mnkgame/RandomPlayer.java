@@ -147,7 +147,7 @@ public class RandomPlayer implements MNKPlayer {
 			yourMenace = 1;
 			for(int j=0; j<N; j+=1) {
 				if(t.val.cellState(j, i) == MNKCellState.P1
-				|| (t.val.cellState(j+1, i) == MNKCellState.P1 && j+1<M) {
+				|| (t.val.cellState(j+1, i) == MNKCellState.P1 && j+1<M)) {
 					myValue = myValue + myMenace;
 					myMenace = myMenace * 10;
 					yourMenace = 1;
@@ -176,12 +176,12 @@ public class RandomPlayer implements MNKPlayer {
 
 		for(int i=0; i<N; i+=1) {
 			myMenace = 1; yourMenace = 1;
-			if(min(N-i, M) >= K){
-				for(int j=0; j<min(N-i, M); j+=1){
+			if(Math.min(N-i, M) >= K){
+				for(int j=0; j<Math.min(N-i, M); j+=1){
 					if (isRight) {
 						y = j+i;
 						if(t.val.cellState(j, y) == MNKCellState.P1
-						|| (t.val.cellState(j+1, y+1) == MNKCellState.P1 && j+1<M && y+1<N) {
+						|| (t.val.cellState(j+1, y+1) == MNKCellState.P1 && j+1<M && y+1<N)) {
 						myValue = myValue + myMenace;
 						myMenace = myMenace * 10;
 						yourMenace = 1;
@@ -200,7 +200,7 @@ public class RandomPlayer implements MNKPlayer {
 					else {
 						y = N-1-j-i;
 						if(t.val.cellState(j, y) == MNKCellState.P1
-						|| (t.val.cellState(j+1, y-1) == MNKCellState.P1 && j+1<M && y-1>N) {
+						|| (t.val.cellState(j+1, y-1) == MNKCellState.P1 && j+1<M && y-1>N)) {
 						myValue = myValue + myMenace;
 						myMenace = myMenace * 10;
 						yourMenace = 1;
@@ -216,6 +216,7 @@ public class RandomPlayer implements MNKPlayer {
 							yourMenace = 1;
 						}
 					}
+				}
 			}
 		}
 		checkScore = myValue - yourValue;
@@ -225,17 +226,17 @@ public class RandomPlayer implements MNKPlayer {
 	// funzione di controllo di minaccia amica/nemica diagonale con offset verticale
 	private int DiagonalCheckVerticalOffset(myTree<MNKBoard> t, boolean isRight) {
 		int myValue = 0, yourValue = 0, myMenace = 1, yourMenace = 1;
-		int x;
+		int x,y;
 		int checkScore;
 
 		for(int i=0; i<M; i+=1) {
 			myMenace = 1; yourMenace = 1;
-			if(min(M-i, N) >= K){
-				for(int j=0; j<min(M-i, N); j+=1){
+			if(Math.min(M-i, N) >= K){
+				for(int j=0; j<Math.min(M-i, N); j+=1){
 					if (isRight) {
 						x = j+i;
 						if(t.val.cellState(x, j) == MNKCellState.P1
-						|| (t.val.cellState(x+1, j+1) == MNKCellState.P1 && x+1<M && j+1<N) {
+						|| (t.val.cellState(x+1, j+1) == MNKCellState.P1 && x+1<M && j+1<N)) {
 						myValue = myValue + myMenace;
 						myMenace = myMenace * 10;
 						yourMenace = 1;
@@ -255,14 +256,14 @@ public class RandomPlayer implements MNKPlayer {
 						x = j+i;
 						y = N-1-j;
 						{
-							if(t.val.cellState(x, y) == MNKCellState.P1 &&
+							if(t.val.cellState(x, y) == MNKCellState.P1
 							|| (t.val.cellState(x+1, y-1) == MNKCellState.P1 && x+1<M && y>N)) {
 							myValue = myValue + myMenace;
 							myMenace = myMenace * 10;
 							yourMenace = 1;
 							}
 							else if(t.val.cellState(x, y) == MNKCellState.P2
-							|| t.val.cellState(x+1, y-1) == MNKCellState.P2 && x+1<M && y>N)) {
+							|| t.val.cellState(x+1, y-1) == MNKCellState.P2 && x+1<M && y>N) {
 							yourValue = yourValue + yourMenace;
 							yourMenace = yourMenace * 10;
 							myMenace = 1;
