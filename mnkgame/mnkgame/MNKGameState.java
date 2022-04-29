@@ -20,25 +20,26 @@
  *  along with this file.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-
+package mnkgame;
 
 /**
- * <code>MNKBoard</code> cell states
- *
- * @see MNKCell MNKCell
- * @see MNKBoard MNKBoard
+ * MNKGame states
  */
-public enum MNKCellState {
+public enum MNKGameState {
 	/**
-   * Cell selected by Player 1
+   * Game still open
    */
-	P1,    
+	OPEN,
 	/**
-	 * Cell selected by Player 2
+   * Game ended in a draw
+   */
+	DRAW, 
+	/**
+	 * Player1 won
 	 */
-	P2,
+	WINP1,
 	/**
-   * Free cell
-   */
-  FREE	
+	 * Player2 won 
+	 */
+	WINP2
 }

@@ -20,6 +20,8 @@
  *  along with this file.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+package mnkgame;
+
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Random;
@@ -64,12 +66,14 @@ public class RandomPlayer implements MNKPlayer {
 
 		myCell = first ? MNKCellState.P1 : MNKCellState.P2;
 		yourCell = first ? MNKCellState.P2 : MNKCellState.P1;
-		DEPTH = M * N;
-		while (Math.pow((M * N), DEPTH) > 1000000000) {
-			DEPTH--;
-		}
+
+		// prende la depth intera se la board è (relativamente) piccola (max 5x5)
+		// altrimenti prende una depth basata su K, nettamente inferiore (permette un albero più completo in superficie ma approssimato)
+		DEPTH = (M*N <= 25) ? M*N-1 : K*2 ;
+
 		// il numero di nodi e foglie da calcolare massimo sono ((M*N)-1) * ((M*N)-2)
 		// ... , che in casi troppo grandi non riuscirà mai a fare in 10 secondi
+		// quindi limito la depth e mi porto avanti di appena K mosse per generare un albero superiore più completo
 
 		RandomPlayer.M = M;
 		RandomPlayer.N = N;
@@ -329,11 +333,15 @@ public class RandomPlayer implements MNKPlayer {
 *                   ABPruning                   *
 *                                               *
 *************************************************/
-
+/**
+ *  crea i figli di tutte le celle libere dell'MNKBoard passata adiacenti ad un cella marcata
+ * @param tree l'albero dove prende la board
+ * @param MC lista delle celle marcate della board
+ */
 	private void getChilds(myTree<MNKBoard> tree, MNKCell[] MC){
 		HashSet<MNKCell> list = new HashSet<MNKCell>();
 		for (MNKCell c : MC) {
-			//aggiungo le caselle esistenti
+			//aggiungo le caselle esistenti alla Hast table
 			// angles
 			if (c.i != M-1 && c.j != N-1) list.add(new MNKCell(c.i-1, c.j+1)); //dwn r
 			if (c.i != 0 && c.j != 0)     list.add(new MNKCell(c.i+1, c.j+1)); // up r
@@ -388,6 +396,8 @@ public class RandomPlayer implements MNKPlayer {
 			cell.eval = (int) Double.NEGATIVE_INFINITY;
 			for (myTree<MNKBoard> c : tree.childs) {
 				cell = max(cell, abPruning(c, false, alpha, beta, depth - 1));
+
+				//cutoff
 				alpha = Math.max(cell.eval, alpha);
 				if (beta <= alpha)
 					break;
@@ -398,6 +408,8 @@ public class RandomPlayer implements MNKPlayer {
 			for (myTree<MNKBoard> c : tree.childs) {
 				cell = min(cell, abPruning(c, true, alpha, beta, depth - 1));
 				beta = Math.min(cell.eval, beta);
+
+				//cutoff
 				if (beta <= alpha)
 					break;
 			}
@@ -589,8 +601,6 @@ public class RandomPlayer implements MNKPlayer {
 
 		// inizio a calcolare la mossa migliore
 		MinmaxMove bestmove;
-
-		// TODO: emergency cell
 
 		bestmove = abPruning(RandomPlayer.node, true, (int) Double.NEGATIVE_INFINITY,(int) Double.POSITIVE_INFINITY, RandomPlayer.DEPTH);
 		
