@@ -1,3 +1,4 @@
+package mnkgame;
 /*
  *  Copyright (C) 2021 Pietro Di Lena
  *  
@@ -20,7 +21,7 @@
  *  along with this file.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package mnkgame;
+
 
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -300,6 +301,7 @@ public class RandomPlayer implements MNKPlayer {
 	 * O(6*M*N)
 	 */
 	private int evaluate(myTree<MNKBoard> t, boolean myTurn) {
+		print("eval sus");
 		int cellscore = 0;
 
 		// controllo orizzontale
@@ -343,13 +345,13 @@ public class RandomPlayer implements MNKPlayer {
 		for (MNKCell c : MC) {
 			//aggiungo le caselle esistenti alla Hast table
 			// angles
-			if (c.i != M-1 && c.j != N-1) list.add(new MNKCell(c.i-1, c.j+1)); //dwn r
-			if (c.i != 0 && c.j != 0)     list.add(new MNKCell(c.i+1, c.j+1)); // up r
-			if (c.i != M-1 && c.j != 0)   list.add(new MNKCell(c.i-1, c.j-1)); //dwn l
-			if (c.i != 0 && c.j != N-1)   list.add(new MNKCell(c.i+1, c.j-1)); // up l
+			if (c.i != M-1 && c.j != N-1) list.add(new MNKCell(c.i+1, c.j+1)); //dwn r
+			if (c.i != 0 && c.j != N-1)   list.add(new MNKCell(c.i-1, c.j+1)); // up r
+			if (c.i != M-1 && c.j != 0)   list.add(new MNKCell(c.i+1, c.j-1)); //dwn l
+			if (c.i != 0 && c.j != 0)     list.add(new MNKCell(c.i-1, c.j-1)); // up l
 			// arrows
-			if (c.i != 0)                 list.add(new MNKCell(c.i+1, c.j)); // up
-			if (c.i != M-1)               list.add(new MNKCell(c.i-1, c.j)); // dwn
+			if (c.i != 0)                 list.add(new MNKCell(c.i-1, c.j)); // up
+			if (c.i != M-1)               list.add(new MNKCell(c.i+1, c.j)); // dwn
 			if (c.j != 0)                 list.add(new MNKCell(c.i, c.j-1)); // l
 			if (c.j != N-1)               list.add(new MNKCell(c.i, c.j+1)); // r
 		}
@@ -370,7 +372,6 @@ public class RandomPlayer implements MNKPlayer {
 		MNKCell[] MCs = tree.val.getMarkedCells();
 		MNKCell lastCell = MCs[MCs.length - 1];
 		MinmaxMove cell = new MinmaxMove(-1, -1, 0);
-
 		Boolean isGameOver = tree.val.gameState != MNKGameState.OPEN;
 
 		if (depth == 0 || (currentTime() - start) / 1000.0 > TIMEOUT * (85.0 / 100.0) || isGameOver) { // casi base (evaluate)
@@ -388,6 +389,7 @@ public class RandomPlayer implements MNKPlayer {
 			// non è in game over -> il tempo sta finendo o sono arrivato alla depth massima
 			// ritorno un'approssimazione del calcolo evaluate dell'ultima cella giocata
 			int out = evaluate(tree, myTurn);
+			
 			return new MinmaxMove(lastCell.i, lastCell.j, out);
 		} 
 		// caso mio turno
@@ -396,7 +398,6 @@ public class RandomPlayer implements MNKPlayer {
 			cell.eval = (int) Double.NEGATIVE_INFINITY;
 			for (myTree<MNKBoard> c : tree.childs) {
 				cell = max(cell, abPruning(c, false, alpha, beta, depth - 1));
-
 				//cutoff
 				alpha = Math.max(cell.eval, alpha);
 				if (beta <= alpha)
@@ -454,32 +455,36 @@ public class RandomPlayer implements MNKPlayer {
 	private MNKCell preventLoss(MNKCell[] FC) {
 
 		B.markCell(FC[1].i, FC[1].j);
-		MNKCell c = FC[0]; // random move
 
-		// mark the random position and check if it's the winning position
+		MNKCell c = FC[0]; // first move
+
+		// mark the position and check if it's the winning position
 		if (B.markCell(c.i, c.j) == yourWin) {
 			// sincronizzo la board interna e ritorno
 			B.unmarkCell();
 			B.unmarkCell();
-			B.markCell(c.i, c.i);
+			B.markCell(c.i, c.j);
 			return c;
 		}
 
 		// sincronizzo la board per il for
 		B.unmarkCell();
 		B.unmarkCell();
-		B.markCell(c.i, c.i);
+		B.markCell(c.i, c.j);
 
 		for (MNKCell d : FC) {
-			if (B.markCell(d.i, d.j) == yourWin) {
-				B.unmarkCell(); // undo adversary move
-				B.unmarkCell(); // undo my move
-				B.markCell(d.i, d.j); // select his winning position
-				return d; // return his winning position
-			} else {
+			if (d != FC[0]){
+				if (B.markCell(d.i, d.j) == yourWin) {
+					B.unmarkCell(); // undo adversary move
+					B.unmarkCell(); // undo my move
+					B.markCell(d.i, d.j); // select his winning position
+					return d; // return his winning position
+				} else {
 				B.unmarkCell(); // undo adversary move to try a new one
+				}
 			}
 		}
+		B.unmarkCell();
 		// se nessuna cella è vincente, ritorna una cella invalida (nemica per il
 		// controllo validità)
 		return new MNKCell(-1, -1, yourCell);
@@ -534,6 +539,7 @@ public class RandomPlayer implements MNKPlayer {
 	
 	public MNKCell selectCell(MNKCell[] FC, MNKCell[] MC) {
 		start = currentTime(); // prendo il tempo di inizio esecuzione funzione (per il timer)
+		print("selecting...");
 		// Uncomment to check the move timeout
 		/*
 		 * try {
@@ -567,8 +573,6 @@ public class RandomPlayer implements MNKPlayer {
 
 			MinmaxMove bestmove;
 
-			// TODO: emergency cell
-
 			bestmove = abPruning(RandomPlayer.node, true, (int) Double.NEGATIVE_INFINITY,(int) Double.POSITIVE_INFINITY, RandomPlayer.DEPTH);
 
 			MNKCell ret = new MNKCell(bestmove.i, bestmove.j);
@@ -596,14 +600,13 @@ public class RandomPlayer implements MNKPlayer {
 			ret = preventLoss(FC);
 
 		// se ho trovato una cella valida, la ritorno
-		if (ret.state != yourCell)
-			return ret;
+		if (ret.state != yourCell){
 
+			return ret;
+		}
 		// inizio a calcolare la mossa migliore
 		MinmaxMove bestmove;
-
 		bestmove = abPruning(RandomPlayer.node, true, (int) Double.NEGATIVE_INFINITY,(int) Double.POSITIVE_INFINITY, RandomPlayer.DEPTH);
-		
 		ret = new MNKCell(bestmove.i, bestmove.j);
 			
 		B.markCell(ret.i, ret.j);

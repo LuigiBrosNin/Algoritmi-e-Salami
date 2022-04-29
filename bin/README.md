@@ -1,5 +1,0 @@
-## (Player name)
-
-TODO documentation
-
-

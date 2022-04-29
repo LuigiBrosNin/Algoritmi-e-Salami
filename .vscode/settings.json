@@ -1,7 +1,5 @@
 {
     "java.project.sourcePaths": [
-        "src",
-        "mnkgame",
         "."
     ],
     "java.project.outputPath": "bin"

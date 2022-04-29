@@ -70,7 +70,7 @@ public class MNKPlayerTester {
 	private static int ERRSCORE   = 2;
 
 	private enum GameState {
-		WINP1, WINP2, DRAW, ERRP1, ERRP2;
+		WINP1, WINP2, DRAW, ERRP1, ERRP2, EP1EX, EP2EX;
 	}
 	
 
@@ -149,7 +149,7 @@ public class MNKPlayerTester {
 				
 				if(n == 0) {
 					System.err.println("Player " + (curr+1) + " (" +Player[curr].playerName() + ") still running: game closed");
-					System.exit(1);
+					return curr == 0 ? GameState.EP1EX : GameState.EP2EX;
 				} else {
 					System.err.println("Player " + (curr+1) + " (" + Player[curr].playerName() + ") eventually stopped: round closed");
 					return curr == 0 ? GameState.ERRP1 : GameState.ERRP2; 
@@ -166,7 +166,7 @@ public class MNKPlayerTester {
 				}
 				if(n == 0) {
 					System.err.println("Player " + (curr+1) + " (" + Player[curr].playerName() + ") still running: game closed");
-					System.exit(1);
+					return curr == 0 ? GameState.EP1EX : GameState.EP2EX;
 				} else {
 					System.err.println("Player " + (curr+1) + " (" + Player[curr].playerName() + ") eventually stopped: round closed");
 					return curr == 0 ? GameState.ERRP1 : GameState.ERRP2;
@@ -261,17 +261,17 @@ public class MNKPlayerTester {
 			}
 			catch(ClassNotFoundException e) {
 				throw new IllegalArgumentException("Illegal argument: \'" + P[i] + "\' class not found");
-      }
-      catch(ClassCastException e) {
+			}
+			catch(ClassCastException e) {
 				throw new IllegalArgumentException("Illegal argument: \'" + P[i] + "\' class does not implement the MNKPlayer interface");
-      }
-      catch(NoSuchMethodException e) {
+			}
+			catch(NoSuchMethodException e) {
 				throw new IllegalArgumentException("Illegal argument: \'" + P[i] + "\' class constructor needs to be empty");
-      }
+			}
 			catch(Exception e) {
 				throw new IllegalArgumentException("Illegal argument: \'" + P[i] + "\' class (unexpected exception) " + e);
 			}
-    }
+   		}
 	}
 
 	private static void printUsage() {
@@ -285,6 +285,8 @@ public class MNKPlayerTester {
 	public static void main(String[] args) {
 		int P1SCORE = 0;
 		int P2SCORE = 0;
+		int[] STATP1 = new int[3];	
+		int[] STATP2 = new int[3];
 
 		if(args.length == 0) {	
 			printUsage();
@@ -298,7 +300,7 @@ public class MNKPlayerTester {
 			System.err.println(e);
 			System.exit(1);	
 		}
-	
+
 		if(VERBOSE) {
 			System.out.println("Game type : " + M + "," + N + "," + K);
 			System.out.println("Player1   : " + Player[0].playerName());
@@ -307,18 +309,21 @@ public class MNKPlayerTester {
 			System.out.println("Timeout   : " + TIMEOUT + " secs\n\n");
 		}
 
-		for(int i = 1; i <= ROUNDS; i++) {
+		boolean stop = false;
+		for(int i = 1; i <= ROUNDS && !stop; i++) {
 			if(VERBOSE) System.out.println("\n**** ROUND " + i + " ****");
 			initGame();
 			GameState state = runGame();
 
 			switch(state) {
-				case WINP1: P1SCORE += WINP1SCORE; break;
-				case WINP2: P2SCORE += WINP2SCORE; break;
-				case ERRP1: P2SCORE += ERRSCORE;   break;
-				case ERRP2: P1SCORE += ERRSCORE;   break;
-				case DRAW : P1SCORE += DRAWSCORE;
-				            P2SCORE += DRAWSCORE;
+				case WINP1: P1SCORE += WINP1SCORE; STATP1[0]++; break;
+				case WINP2: P2SCORE += WINP2SCORE; STATP2[0]++; break;
+				case ERRP1: P2SCORE += ERRSCORE;   STATP1[2]++; break;
+				case EP1EX: P2SCORE += ERRSCORE;   STATP1[2]++; stop=true; break;
+				case ERRP2: P1SCORE += ERRSCORE;   STATP2[2]++; break;
+				case EP2EX: P1SCORE += ERRSCORE;   STATP2[2]++; stop=true; break;
+				case DRAW : P1SCORE += DRAWSCORE;  STATP1[1]++;
+				            P2SCORE += DRAWSCORE;  STATP2[1]++;
 				            break;
 			}
 			if(VERBOSE) {
@@ -327,7 +332,8 @@ public class MNKPlayerTester {
 			}
 		}
 		if(VERBOSE) System.out.println("\n**** FINAL SCORE ****");
-		System.out.println(Player[0].playerName() + " " + P1SCORE);
-		System.out.println(Player[1].playerName() + " " + P2SCORE);	
+		System.out.println(Player[0].playerName() + " Score: " + P1SCORE + " Won: " + STATP1[0] + " Lost: " + STATP2[0] + " Draw: " + STATP1[1] + " Error: " + STATP1[2]);
+		System.out.println(Player[1].playerName() + " Score: " + P2SCORE + " Won: " + STATP2[0] + " Lost: " + STATP1[0] + " Draw: " + STATP2[1] + " Error: " + STATP2[2]);	
+		System.exit(0);
 	}
 }

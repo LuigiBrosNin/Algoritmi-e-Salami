@@ -24,10 +24,6 @@ package mnkgame;
 
 import java.util.Random;
 
-import mnkgame.MNKCell;
-import mnkgame.MNKGameState;
-import mnkgame.MNKPlayer;
-
 /**
  * Software player only a bit smarter than random.
  * <p> It can detect a single-move win or loss. In all the other cases behaves randomly.
@@ -65,7 +61,7 @@ public class QuasiRandomPlayer implements MNKPlayer {
    * a random cell in <code>FC</code>.
 	 * </p>
    */
-	public MNKCell selectCell(MNKCell[] FC, MNKCell[] MC) { // MC = marked cells FC = free cells
+	public MNKCell selectCell(MNKCell[] FC, MNKCell[] MC) {
 		long start = System.currentTimeMillis();
 		if(MC.length > 0) {
 			MNKCell c = MC[MC.length-1]; // Recover the last move from MC
