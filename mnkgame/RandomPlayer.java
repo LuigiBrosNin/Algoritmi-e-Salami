@@ -84,7 +84,11 @@ public class RandomPlayer implements MNKPlayer {
 		 * }
 		 */
 	}
-
+/************************************************
+*                                               *
+*                   AUX BASE                    *
+*                                               *
+*************************************************/
 	private MinmaxMove min(MinmaxMove a, MinmaxMove b) {
 		if (a.eval < b.eval) {
 			return a;
@@ -106,7 +110,11 @@ public class RandomPlayer implements MNKPlayer {
 	private long currentTime() {
 		return System.currentTimeMillis();
 	}
-
+/************************************************
+*                                               *
+*               EVAL functions                  *
+*                                               *
+*************************************************/
 	// funzione di controllo di minaccia amica/nemica orizzontale
 	private int horizontalCheck(myTree<MNKBoard> t) {
 		int myValue = 0, yourValue = 0, myMenace = 1, yourMenace = 1;
@@ -316,9 +324,14 @@ public class RandomPlayer implements MNKPlayer {
 			return (-cellscore);
 	}
 
-	private int getChilds(myTree<MNKBoard> tree, MNKCell[] MC){
+/************************************************
+*                                               *
+*                   ABPruning                   *
+*                                               *
+*************************************************/
+
+	private void getChilds(myTree<MNKBoard> tree, MNKCell[] MC){
 		HashSet<MNKCell> list = new HashSet<MNKCell>();
-		int pos=0;
 		for (MNKCell c : MC) {
 			//aggiungo le caselle esistenti
 			// angles
@@ -332,9 +345,15 @@ public class RandomPlayer implements MNKPlayer {
 			if (c.j != 0)                 list.add(new MNKCell(c.i, c.j-1)); // l
 			if (c.j != N-1)               list.add(new MNKCell(c.i, c.j+1)); // r
 		}
-		//TOFINISH
 
-		return -1;
+		//calcolo i figli e li aggiungo all'albero
+		for (MNKCell cell : list) {
+			if (tree.val.cellState(cell.i,cell.j) == MNKCellState.FREE) {
+				MNKBoard child = copyBoard(tree.val);
+				child.markCell(cell.i, cell.j);
+				tree.addChild(child);
+			}
+		}
 	}
 
 
@@ -346,11 +365,26 @@ public class RandomPlayer implements MNKPlayer {
 
 		Boolean isGameOver = tree.val.gameState != MNKGameState.OPEN;
 
-		if (depth == 0 || (currentTime() - start) / 9000.0 > TIMEOUT * (90.0 / 100.0) || isGameOver) { // TODO: casi base
-			cell.eval = evaluate(tree, myTurn);
-			cell.i = lastCell.i;
-			cell.j = lastCell.j;
-		} else if (myTurn) {
+		if (depth == 0 || (currentTime() - start) / 1000.0 > TIMEOUT * (85.0 / 100.0) || isGameOver) { // casi base (evaluate)
+			MNKCell c = MCs[MCs.length-1];
+			if (tree.val.gameState() == myWin) 
+			{ // WIN
+				return new MinmaxMove(c.i, c.j, (int)Double.POSITIVE_INFINITY);
+			} // LOSS
+			else if (tree.val.gameState() == yourWin) {
+				return new MinmaxMove(c.i, c.j, (int)Double.NEGATIVE_INFINITY);
+			} // DRAW
+			else if (isGameOver){ 
+				return new MinmaxMove(c.i, c.j, 0);
+			}
+			// non è in game over -> il tempo sta finendo o sono arrivato alla depth massima
+			// ritorno un'approssimazione del calcolo evaluate dell'ultima cella giocata
+			int out = evaluate(tree, myTurn);
+			return new MinmaxMove(lastCell.i, lastCell.j, out);
+		} 
+		// caso mio turno
+		else if (myTurn) {
+			getChilds(tree, MCs);
 			cell.eval = (int) Double.NEGATIVE_INFINITY;
 			for (myTree<MNKBoard> c : tree.childs) {
 				cell = max(cell, abPruning(c, false, alpha, beta, depth - 1));
@@ -358,7 +392,8 @@ public class RandomPlayer implements MNKPlayer {
 				if (beta <= alpha)
 					break;
 			}
-		} else {
+		} else { // caso turno avversario
+			getChilds(tree, MCs);
 			cell.eval = (int) Double.POSITIVE_INFINITY;
 			for (myTree<MNKBoard> c : tree.childs) {
 				cell = min(cell, abPruning(c, true, alpha, beta, depth - 1));
@@ -367,9 +402,15 @@ public class RandomPlayer implements MNKPlayer {
 					break;
 			}
 		}
-		// TODO: update tree ?
+		// ritorno la bestcell
 		return cell;
 	}
+
+/************************************************
+*                                               *
+*            QUASIRANDOM ALGORITHMS             *
+*                                               *
+*************************************************/
 
 	/**
 	 * 
@@ -432,6 +473,11 @@ public class RandomPlayer implements MNKPlayer {
 		return new MNKCell(-1, -1, yourCell);
 	}
 
+/************************************************
+*                                               *
+*              TREE MANIPULATION                *
+*                                               *
+*************************************************/
 	/**
 	 * 
 	 * simple copying function for creating new boards for us to save in the
@@ -468,6 +514,12 @@ public class RandomPlayer implements MNKPlayer {
 		}
 	}
 
+/************************************************
+*                                               *
+*                 MAIN FUNCTION                 *
+*                                               *
+*************************************************/
+	
 	public MNKCell selectCell(MNKCell[] FC, MNKCell[] MC) {
 		start = currentTime(); // prendo il tempo di inizio esecuzione funzione (per il timer)
 		// Uncomment to check the move timeout
