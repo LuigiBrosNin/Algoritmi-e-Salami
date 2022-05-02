@@ -317,21 +317,28 @@ public class RandomPlayer implements MNKPlayer {
 
 		// controllo orizzontale
 		cellscore += horizontalCheck(t);
+		print("horiz done");
+
 		// controllo verticale
 		cellscore += verticalCheck(t);
+		print("vert done");
 
 		if (M >= K && N >= K) {
 			// controllo diagonale dx, offset orizzontale
 			cellscore += DiagonalCheckHorizontalOffset(t, true);
+			print("horiz right done");
 
 			// controllo diagonale dx, offset verticale
 			cellscore += DiagonalCheckVerticalOffset(t, true);
+			print("vert right done");
 
 			// controllo diagonale sx, offset orizzontale
 			cellscore += DiagonalCheckHorizontalOffset(t, false);
+			print("horiz left done");
 
 			// controllo diagonale sx, offset verticale
 			cellscore += DiagonalCheckVerticalOffset(t, false);
+			print("vert left done");
 
 		}
 
