@@ -130,14 +130,14 @@ public class RandomPlayer implements MNKPlayer {
 			yourMenace = 1;
 			for(int j=0; j<N; j+=1) {
 				if(t.val.cellState(i, j) == MNKCellState.P1
-				|| (t.val.cellState(i, j+1) == MNKCellState.P1 && j+1<N-1
+				|| (j+1<N && t.val.cellState(i, j+1) == MNKCellState.P1
 				&& t.val.cellState(i, j) == MNKCellState.FREE)) {
 					myValue = myValue + myMenace;
 					myMenace = myMenace * 10;
 					yourMenace = 1;
 				}
-				if(t.val.cellState(i, j) == MNKCellState.P2
-				|| (t.val.cellState(i, j+1) == MNKCellState.P2 && j+1<N-1
+				else if(t.val.cellState(i, j) == MNKCellState.P2
+				|| (j+1<N && t.val.cellState(i, j+1) == MNKCellState.P2
 				&& t.val.cellState(i, j) == MNKCellState.FREE)) {
 					yourValue = yourValue + yourMenace;
 					yourMenace = yourMenace * 10;
@@ -162,14 +162,14 @@ public class RandomPlayer implements MNKPlayer {
 			yourMenace = 1;
 			for(int j=0; j<N; j+=1) {
 				if(t.val.cellState(j, i) == MNKCellState.P1
-				|| (t.val.cellState(j+1, i) == MNKCellState.P1 && j+1<M-1
+				|| (j+1<M && t.val.cellState(j+1, i) == MNKCellState.P1
 				&& t.val.cellState(j, i) == MNKCellState.FREE)) {
 					myValue = myValue + myMenace;
 					myMenace = myMenace * 10;
 					yourMenace = 1;
 				}
-				if(t.val.cellState(j, i) == MNKCellState.P2
-				|| (t.val.cellState(j+1, i) == MNKCellState.P2 && j+1<M-1
+				else if(t.val.cellState(j, i) == MNKCellState.P2
+				|| (j+1<M && t.val.cellState(j+1, i) == MNKCellState.P2
 				&& t.val.cellState(j, i) == MNKCellState.FREE)) {
 					yourValue = yourValue + yourMenace;
 					yourMenace = yourMenace * 10;
@@ -198,14 +198,14 @@ public class RandomPlayer implements MNKPlayer {
 					if (isRight) {
 						y = j+i;
 						if(t.val.cellState(j, y) == MNKCellState.P1
-						|| (t.val.cellState(j+1, y+1) == MNKCellState.P1 && j+1<M-1 && y+1<N-1
+						|| (j+1<M && y+1<N && t.val.cellState(j+1, y+1) == MNKCellState.P1
 						&& t.val.cellState(j, y) == MNKCellState.FREE)) {
 						myValue = myValue + myMenace;
 						myMenace = myMenace * 10;
 						yourMenace = 1;
 						}
 						else if(t.val.cellState(j, y) == MNKCellState.P2
-						|| (t.val.cellState(j+1, y+1) == MNKCellState.P2 && j+1<M-1 && y+1<N-1
+						|| (j+1<M && y+1<N && t.val.cellState(j+1, y+1) == MNKCellState.P2
 						&& t.val.cellState(j, y) == MNKCellState.FREE)) {
 							yourValue = yourValue + yourMenace;
 							yourMenace = yourMenace * 10;
@@ -219,14 +219,14 @@ public class RandomPlayer implements MNKPlayer {
 					else {
 						y = N-1-j-i;
 						if(t.val.cellState(j, y) == MNKCellState.P1
-						|| (t.val.cellState(j+1, y-1) == MNKCellState.P1 && j+1<M-1 && y-1>N+1
+						|| (j+1<M && y-1>N && t.val.cellState(j+1, y-1) == MNKCellState.P1
 						&& t.val.cellState(j, y) == MNKCellState.FREE)) {
 						myValue = myValue + myMenace;
 						myMenace = myMenace * 10;
 						yourMenace = 1;
 						}
 						else if(t.val.cellState(j, y) == MNKCellState.P2
-						|| (t.val.cellState(j+1, y-1) == MNKCellState.P2 && j+1<M-1 && y-1>N+1
+						|| (j+1<M && y-1>N && t.val.cellState(j+1, y-1) == MNKCellState.P2
 						&& t.val.cellState(j, y) == MNKCellState.FREE)) {
 							yourValue = yourValue + yourMenace;
 							yourMenace = yourMenace * 10;
@@ -257,18 +257,18 @@ public class RandomPlayer implements MNKPlayer {
 					if (isRight) {
 						x = j+i;
 						if(t.val.cellState(x, j) == MNKCellState.P1
-						|| (t.val.cellState(x+1, j+1) == MNKCellState.P1 && x+1<M-1 && j+1<N-1
+						|| (x+1<M && j+1<N && t.val.cellState(x+1, j+1) == MNKCellState.P1
 						&& t.val.cellState(x, j) == MNKCellState.FREE)) {
-						myValue = myValue + myMenace;
-						myMenace = myMenace * 10;
-						yourMenace = 1;
+							myValue = myValue + myMenace;
+							myMenace = myMenace * 10;
+							yourMenace = 1;
 						}
 						else if(t.val.cellState(x, j) == MNKCellState.P2
-						|| (t.val.cellState(x+1, j+1) == MNKCellState.P2 && x+1<M-1 && j+1<N-1
+						|| (x+1<M && j+1<N && t.val.cellState(x+1, j+1) == MNKCellState.P2
 						&& t.val.cellState(x, j) == MNKCellState.FREE)) {
-						yourValue = yourValue + yourMenace;
-						yourMenace = yourMenace * 10;
-						myMenace = 1;
+							yourValue = yourValue + yourMenace;
+							yourMenace = yourMenace * 10;
+							myMenace = 1;
 						}
 						else {
 							myMenace = 1;
@@ -278,65 +278,66 @@ public class RandomPlayer implements MNKPlayer {
 					else {
 						x = j+i;
 						y = N-1-j;
-						{
-							if(t.val.cellState(x, y) == MNKCellState.P1
-							|| (t.val.cellState(x+1, y-1) == MNKCellState.P1 && x+1<M-1 && y>N+1
-							&& t.val.cellState(x, y) == MNKCellState.FREE)) {
+						if(t.val.cellState(x, y) == MNKCellState.P1
+						|| (x+1<M && y>N && t.val.cellState(x+1, y-1) == MNKCellState.P1
+						&& t.val.cellState(x, y) == MNKCellState.FREE)) {
 							myValue = myValue + myMenace;
 							myMenace = myMenace * 10;
 							yourMenace = 1;
-							}
-							else if(t.val.cellState(x, y) == MNKCellState.P2
-							|| t.val.cellState(x+1, y-1) == MNKCellState.P2 && x+1<M-1 && y>N+1
-							&& t.val.cellState(x, y) == MNKCellState.FREE) {
+						}
+						else if(t.val.cellState(x, y) == MNKCellState.P2
+						|| (x+1<M && y>N && t.val.cellState(x+1, y-1) == MNKCellState.P2
+						&& t.val.cellState(x, y) == MNKCellState.FREE)) {
 							yourValue = yourValue + yourMenace;
 							yourMenace = yourMenace * 10;
 							myMenace = 1;
-							}
-							else {
-								myMenace = 1;
-								yourMenace = 1;
-							}
+						}
+						else {
+							myMenace = 1;
+							yourMenace = 1;
 						}
 					}
-
 				}
 			}
 		}
 		checkScore = myValue - yourValue;
 		return checkScore;
 	}
-
 	/*
 	 * costo
 	 * O(6*M*N)
 	 */
 	private int evaluate(myTree<MNKBoard> t, boolean myTurn) {
-		print("eval sus");
 		int cellscore = 0;
 
 		// controllo orizzontale
+		print("doing horiz");
 		cellscore += horizontalCheck(t);
 		print("horiz done");
 
 		// controllo verticale
+		print("doing vert");
 		cellscore += verticalCheck(t);
 		print("vert done");
 
 		if (M >= K && N >= K) {
 			// controllo diagonale dx, offset orizzontale
+			print("doing horiz right");
 			cellscore += DiagonalCheckHorizontalOffset(t, true);
 			print("horiz right done");
 
 			// controllo diagonale dx, offset verticale
+			print("doing vert right");
 			cellscore += DiagonalCheckVerticalOffset(t, true);
 			print("vert right done");
 
 			// controllo diagonale sx, offset orizzontale
+			print("doing horiz left");
 			cellscore += DiagonalCheckHorizontalOffset(t, false);
 			print("horiz left done");
 
 			// controllo diagonale sx, offset verticale
+			print("doing vert left");
 			cellscore += DiagonalCheckVerticalOffset(t, false);
 			print("vert left done");
 
