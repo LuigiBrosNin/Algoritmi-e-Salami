@@ -24,7 +24,7 @@ package mnkgame;
 
 
 import java.util.HashSet;
-import java.util.LinkedList;
+//import java.util.LinkedList;
 import java.util.Random;
 
 /**
@@ -311,35 +311,23 @@ public class RandomPlayer implements MNKPlayer {
 		int cellscore = 0;
 
 		// controllo orizzontale
-		print("doing horiz");
 		cellscore += horizontalCheck(t);
-		print("horiz done");
 
 		// controllo verticale
-		print("doing vert");
 		cellscore += verticalCheck(t);
-		print("vert done");
 
 		if (M >= K && N >= K) {
 			// controllo diagonale dx, offset orizzontale
-			print("doing horiz right");
 			cellscore += DiagonalCheckHorizontalOffset(t, true);
-			print("horiz right done");
 
 			// controllo diagonale dx, offset verticale
-			print("doing vert right");
 			cellscore += DiagonalCheckVerticalOffset(t, true);
-			print("vert right done");
 
 			// controllo diagonale sx, offset orizzontale
-			print("doing horiz left");
 			cellscore += DiagonalCheckHorizontalOffset(t, false);
-			print("horiz left done");
 
 			// controllo diagonale sx, offset verticale
-			print("doing vert left");
 			cellscore += DiagonalCheckVerticalOffset(t, false);
-			print("vert left done");
 
 		}
 
@@ -590,6 +578,8 @@ public class RandomPlayer implements MNKPlayer {
 		if (MC.length == 1) {
 			RandomPlayer.node = new myTree<MNKBoard>(copyBoard(B));
 
+			getChilds(RandomPlayer.node, MC);
+
 			MinmaxMove bestmove;
 
 			bestmove = abPruning(RandomPlayer.node, true, (int) Double.NEGATIVE_INFINITY,(int) Double.POSITIVE_INFINITY, RandomPlayer.DEPTH);
@@ -605,10 +595,9 @@ public class RandomPlayer implements MNKPlayer {
 
 		if (FC.length == 1)
 			return FC[0]; // ritorno immediatamente se non devo calcolare nulla (free cells = 1)
-
+		
 		// mi sposto nel nodo dell'albero interessato
 		updateNode(c);
-
 		MNKCell ret;
 
 		// cerco una casella vincente

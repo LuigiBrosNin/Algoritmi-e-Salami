@@ -25,6 +25,11 @@ public class TestPlayer implements MNKPlayer
         
     }
 
+
+	private void print(String a) {
+		System.out.println(a);
+	}
+
     public void initPlayer(int M, int N, int K, boolean first, int timeout_in_secs) {
         this.M = M;
         this.N = N;
@@ -61,7 +66,7 @@ public class TestPlayer implements MNKPlayer
             MNKCell emergencyCell = getEmergencyCell(LM, FC);
 
             this.node = new myTree<MNKBoard>(cloneBoard(B));
-            MinimaxMove MM = ALPHABETA(node, MC, false, DEPTH, -(int)Double.POSITIVE_INFINITY, (int)Double.POSITIVE_INFINITY, start, emergencyCell);
+            MinmaxMove MM = ALPHABETA(node, MC, false, DEPTH, -(int)Double.POSITIVE_INFINITY, (int)Double.POSITIVE_INFINITY, start, emergencyCell);
 
             // cerca la nostra mossa nell'albero di gioco e aggiorna this.node
             for (int i = 0; i < this.node.childs.size(); i++) {
@@ -102,7 +107,7 @@ public class TestPlayer implements MNKPlayer
                 this.node = new myTree<MNKBoard>(cloneBoard(B));
             }
 
-            MinimaxMove MM = ALPHABETA(this.node, MC, false, DEPTH, -(int)Double.POSITIVE_INFINITY, (int)Double.POSITIVE_INFINITY, start, emergencyCell);
+            MinmaxMove MM = ALPHABETA(this.node, MC, false, DEPTH, -(int)Double.POSITIVE_INFINITY, (int)Double.POSITIVE_INFINITY, start, emergencyCell);
             // cerca la nostra mossa nell'albero di gioco e aggiorna this.node
             for (int i = 0; i < this.node.childs.size(); i++) {
                 MNKCell[] CMC = ((MNKBoard)(node.childs.get(i).val)).getMarkedCells();
@@ -245,9 +250,9 @@ public class TestPlayer implements MNKPlayer
         return emergencyCell;
     }
 
-    private MinimaxMove ALPHABETA(myTree<MNKBoard> T, MNKCell[] MC, boolean mynode, int depth, int a, int b, long start, MNKCell emergencyCell) {
+    private MinmaxMove ALPHABETA(myTree<MNKBoard> T, MNKCell[] MC, boolean mynode, int depth, int a, int b, long start, MNKCell emergencyCell) {
         if (start != 0 && (System.currentTimeMillis()-start)/1000.0 > TIMEOUT*(80.0/100.0)) {
-            return new MinimaxMove(emergencyCell.i, emergencyCell.j, 0);
+            return new MinmaxMove(emergencyCell.i, emergencyCell.j, 0);
         }
 
         boolean gameover = T.val.gameState() != MNKGameState.OPEN;
@@ -255,33 +260,34 @@ public class TestPlayer implements MNKPlayer
         if (!gameover)
             childsCount = genChilds(T,MC);
         if (depth == 0 || gameover || childsCount == 0) {
+            print(Integer.toString(depth));
             MNKCell[] MCs = T.val.getMarkedCells();
             MNKCell c = MCs[MCs.length-1];
 
             if (gameover) {
                 if (T.val.gameState() == myWin) {
-                    return new MinimaxMove(c.i, c.j, (int)Double.POSITIVE_INFINITY);
+                    return new MinmaxMove(c.i, c.j, (int)Double.POSITIVE_INFINITY);
                     
                 }
                 else if (T.val.gameState() == yourWin) {
-                    return new MinimaxMove(c.i, c.j, -(int)Double.POSITIVE_INFINITY);
+                    return new MinmaxMove(c.i, c.j, -(int)Double.POSITIVE_INFINITY);
                     
                 }
                 else {
-                    return new MinimaxMove(c.i, c.j, 0);
+                    return new MinmaxMove(c.i, c.j, 0);
                     
                 }
             }
 
             int out = depth*evaluate(T.val, mynode);
-            return new MinimaxMove(c.i, c.j, out);
+            return new MinmaxMove(c.i, c.j, out);
         }
         else if (mynode) {
             int eval = (int)Double.POSITIVE_INFINITY;
             //genChilds(T, MC);
             int l=-1, j=-1;
             for (int i=0; i<T.childs.size();i++) {
-                MinimaxMove out = ALPHABETA((myTree)T.childs.get(i), MC, false, depth-1, a, b, start, emergencyCell);
+                MinmaxMove out = ALPHABETA((myTree)T.childs.get(i), MC, false, depth-1, a, b, start, emergencyCell);
                 if (out.eval <= eval || l==-1) {
                     eval = out.eval;
                     MNKCell[] MCs = ((MNKBoard)T.childs.get(i).val).getMarkedCells();
@@ -294,14 +300,14 @@ public class TestPlayer implements MNKPlayer
                     break;
                 }
             }
-            return new MinimaxMove(l, j, eval);
+            return new MinmaxMove(l, j, eval);
         }
         else {
             int eval = -(int)Double.POSITIVE_INFINITY;
             //genChilds(T, MC);
             int l=-1, j=-1;
             for (int i=0; i<T.childs.size();i++) {
-                MinimaxMove out = ALPHABETA((myTree)T.childs.get(i), MC, true, depth-1, a, b, start, emergencyCell);
+                MinmaxMove out = ALPHABETA((myTree)T.childs.get(i), MC, true, depth-1, a, b, start, emergencyCell);
                 if (out.eval >= eval || l==-1) {
                      eval = out.eval;
                     MNKCell[] MCs = ((MNKBoard)T.childs.get(i).val).getMarkedCells();
@@ -315,7 +321,7 @@ public class TestPlayer implements MNKPlayer
                     break;
                 }
             }
-            return new MinimaxMove(l, j, eval);
+            return new MinmaxMove(l, j, eval);
         }
     }
 
