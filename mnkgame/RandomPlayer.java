@@ -120,15 +120,22 @@ public class RandomPlayer implements MNKPlayer {
 *               EVAL functions                  *
 *                                               *
 *************************************************/
+/**
+ * @param t board da analizzare
+ * @param isRight true = controllo diag. destra, false = controllo diag. sinistra
+ * @param myTurn true = tocca al bot, false = tocca all'avversario
+ */
 	// funzione di controllo di minaccia amica/nemica orizzontale
 	private int horizontalCheck(myTree<MNKBoard> t) {
 		int myValue = 0, yourValue = 0, myMenace = 1, yourMenace = 1;
 		int checkScore;
 
+		// inizio a scorrere le caselle
 		for (int i = 0; i < M; i += 1) {
 			myMenace = 1;
 			yourMenace = 1;
 			for(int j=0; j<N; j+=1) {
+				// controllo sia le adiacenze (del tipo x x / o o) sia eventuali "salti" (del tipo x - x / o - o)
 				if(t.val.cellState(i, j) == MNKCellState.P1
 				|| (j+1<N && t.val.cellState(i, j+1) == MNKCellState.P1
 				&& t.val.cellState(i, j) == MNKCellState.FREE)) {
@@ -157,10 +164,12 @@ public class RandomPlayer implements MNKPlayer {
 		int myValue = 0, yourValue = 0, myMenace = 1, yourMenace = 1;
 		int checkScore;
 
+		// inizio a scorrere le caselle
 		for (int i = 0; i < M; i += 1) {
 			myMenace = 1;
 			yourMenace = 1;
 			for(int j=0; j<N; j+=1) {
+				// effettuo controlli analoghi alla funzione horizontalCheck ma, ovviamente, in verticale
 				if(t.val.cellState(j, i) == MNKCellState.P1
 				|| (j+1<M && t.val.cellState(j+1, i) == MNKCellState.P1
 				&& t.val.cellState(j, i) == MNKCellState.FREE)) {
@@ -184,19 +193,21 @@ public class RandomPlayer implements MNKPlayer {
 		return checkScore;
 	}
 
-	// funzione di controllo di minaccia amica/nemica diagonale con offset
-	// orizzontale
+	// funzione di controllo di minaccia amica/nemica diagonale con offset orizzontale
 	private int DiagonalCheckHorizontalOffset(myTree<MNKBoard> t, boolean isRight) {
 		int myValue = 0, yourValue = 0, myMenace = 1, yourMenace = 1;
 		int y;
 		int checkScore;
 
+		// inizio a scorrere le caselle
 		for(int i=0; i<N; i+=1) {
 			myMenace = 1; yourMenace = 1;
 			if(Math.min(N-i, M) >= K){
 				for(int j=0; j<Math.min(N-i, M); j+=1){
+					// controllo con diagonale verso destra
 					if (isRight) {
 						y = j+i;
+						// effettuo il controllo con la stessa logica (sia adiacente che due celle dopo) delle funzioni precedenti
 						if(t.val.cellState(j, y) == MNKCellState.P1
 						|| (j+1<M && y+1<N && t.val.cellState(j+1, y+1) == MNKCellState.P1
 						&& t.val.cellState(j, y) == MNKCellState.FREE)) {
@@ -216,8 +227,10 @@ public class RandomPlayer implements MNKPlayer {
 							yourMenace = 1;
 						}
 					}
+					// controllo con diagonale verso sinistra
 					else {
 						y = N-1-j-i;
+						// effettuo il controllo con la stessa logica (sia adiacente che due celle dopo) delle funzioni precedenti
 						if(t.val.cellState(j, y) == MNKCellState.P1
 						|| (j+1<M && y-1>N && t.val.cellState(j+1, y-1) == MNKCellState.P1
 						&& t.val.cellState(j, y) == MNKCellState.FREE)) {
@@ -254,8 +267,10 @@ public class RandomPlayer implements MNKPlayer {
 			myMenace = 1; yourMenace = 1;
 			if(Math.min(M-i, N) >= K){
 				for(int j=0; j<Math.min(M-i, N); j+=1){
+					// controllo con diagonale verso destra
 					if (isRight) {
 						x = j+i;
+						// effettuo il controllo con la stessa logica (sia adiacente che due celle dopo) delle funzioni precedenti
 						if(t.val.cellState(x, j) == MNKCellState.P1
 						|| (x+1<M && j+1<N && t.val.cellState(x+1, j+1) == MNKCellState.P1
 						&& t.val.cellState(x, j) == MNKCellState.FREE)) {
@@ -275,9 +290,11 @@ public class RandomPlayer implements MNKPlayer {
 							yourMenace = 1;
 						}
 					}
+					// controllo con diagonale verso sinistra
 					else {
 						x = j+i;
 						y = N-1-j;
+						// effettuo il controllo con la stessa logica (sia adiacente che due celle dopo) delle funzioni precedenti
 						if(t.val.cellState(x, y) == MNKCellState.P1
 						|| (x+1<M && y>N && t.val.cellState(x+1, y-1) == MNKCellState.P1
 						&& t.val.cellState(x, y) == MNKCellState.FREE)) {
