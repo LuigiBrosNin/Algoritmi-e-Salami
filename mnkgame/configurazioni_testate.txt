@@ -2,21 +2,21 @@
 
 3 3 3 x
 4 3 3 x
-4 4 3 -
+4 4 3 x
 4 4 4 x
-5 4 4 ?
-5 5 4 
-5 5 5 
-6 4 4 
-6 5 4 
-6 6 4 
-6 6 5 
-6 6 6 
-7 4 4 
-7 5 4 
-7 6 4 
-7 7 4 
-7 5 5 
+5 4 4 x
+5 5 4 x
+5 5 5 x
+6 4 4 x
+6 5 4 x
+6 6 4 x
+6 6 5 x
+6 6 6 x
+7 4 4 - vince se primo, perde se secondo
+7 5 4 - perde se primo, vince se secondo
+7 6 4 x
+7 7 4 x
+7 5 5 x
 7 6 5 
 7 7 5 
 7 7 6 
@@ -26,6 +26,6 @@
 50 50 10
 70 70 10
 
-x = pass
+x = pass / even better results
 ? = bug
-- = risultato diverso
+- = different results

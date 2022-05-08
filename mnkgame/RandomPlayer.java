@@ -165,10 +165,10 @@ public class RandomPlayer implements MNKPlayer {
 		int checkScore;
 
 		// inizio a scorrere le caselle
-		for (int i = 0; i < M; i += 1) {
+		for (int i = 0; i < N; i += 1) {
 			myMenace = 1;
 			yourMenace = 1;
-			for(int j=0; j<N; j+=1) {
+			for(int j=0; j<M; j+=1) {
 				// effettuo controlli analoghi alla funzione horizontalCheck ma, ovviamente, in verticale
 				if(t.val.cellState(j, i) == MNKCellState.P1
 				|| (j+1<M && t.val.cellState(j+1, i) == MNKCellState.P1
@@ -330,27 +330,34 @@ public class RandomPlayer implements MNKPlayer {
 		// controllo orizzontale
 		print("doing horiz");
 		cellscore += horizontalCheck(t);
+		print("horiz done");
 
 		// controllo verticale
 		print("doing vert");
 		cellscore += verticalCheck(t);
+		print("vert done");
 
 		if (M >= K && N >= K) {
 			// controllo diagonale dx, offset orizzontale
 			print("doing horiz right");
 			cellscore += DiagonalCheckHorizontalOffset(t, true);
+			print("horiz right done");
 
 			// controllo diagonale dx, offset verticale
 			print("doing vert right");
 			cellscore += DiagonalCheckVerticalOffset(t, true);
+			print("vert right done");
 
 			// controllo diagonale sx, offset orizzontale
 			print("doing horiz left");
 			cellscore += DiagonalCheckHorizontalOffset(t, false);
+			print("horiz left done");
+			
 
 			// controllo diagonale sx, offset verticale
 			print("doing vert left");
 			cellscore += DiagonalCheckVerticalOffset(t, false);
+			print("vert left done");
 
 		}
 
@@ -426,7 +433,7 @@ public class RandomPlayer implements MNKPlayer {
 		else if (myTurn) {
 			getChilds(tree, MCs);
 			cell.eval = (int) Double.NEGATIVE_INFINITY;
-			for (myTree<MNKBoard c : tree.childs) {
+			for (myTree<MNKBoard> c : tree.childs) {
 				cell = max(cell, abPruning(c, false, alpha, beta, depth - 1));
 				//cutoff
 				alpha = Math.max(cell.eval, alpha);
