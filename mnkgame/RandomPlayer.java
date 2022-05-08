@@ -328,22 +328,28 @@ public class RandomPlayer implements MNKPlayer {
 		int cellscore = 0;
 
 		// controllo orizzontale
+		print("doing horiz");
 		cellscore += horizontalCheck(t);
 
 		// controllo verticale
+		print("doing vert");
 		cellscore += verticalCheck(t);
 
 		if (M >= K && N >= K) {
 			// controllo diagonale dx, offset orizzontale
+			print("doing horiz right");
 			cellscore += DiagonalCheckHorizontalOffset(t, true);
 
 			// controllo diagonale dx, offset verticale
+			print("doing vert right");
 			cellscore += DiagonalCheckVerticalOffset(t, true);
 
 			// controllo diagonale sx, offset orizzontale
+			print("doing horiz left");
 			cellscore += DiagonalCheckHorizontalOffset(t, false);
 
 			// controllo diagonale sx, offset verticale
+			print("doing vert left");
 			cellscore += DiagonalCheckVerticalOffset(t, false);
 
 		}
@@ -420,7 +426,7 @@ public class RandomPlayer implements MNKPlayer {
 		else if (myTurn) {
 			getChilds(tree, MCs);
 			cell.eval = (int) Double.NEGATIVE_INFINITY;
-			for (myTree<MNKBoard> c : tree.childs) {
+			for (myTree<MNKBoard c : tree.childs) {
 				cell = max(cell, abPruning(c, false, alpha, beta, depth - 1));
 				//cutoff
 				alpha = Math.max(cell.eval, alpha);
