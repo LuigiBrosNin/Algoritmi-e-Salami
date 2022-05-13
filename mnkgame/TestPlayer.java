@@ -260,7 +260,6 @@ public class TestPlayer implements MNKPlayer
         if (!gameover)
             childsCount = genChilds(T,MC);
         if (depth == 0 || gameover || childsCount == 0) {
-            print(Integer.toString(depth));
             MNKCell[] MCs = T.val.getMarkedCells();
             MNKCell c = MCs[MCs.length-1];
 

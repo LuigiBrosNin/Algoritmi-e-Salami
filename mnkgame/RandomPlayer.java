@@ -23,6 +23,7 @@ package mnkgame;
 
 
 
+import java.util.ArrayList;
 import java.util.HashSet;
 //import java.util.LinkedList;
 import java.util.Random;
@@ -328,36 +329,36 @@ public class RandomPlayer implements MNKPlayer {
 		int cellscore = 0;
 
 		// controllo orizzontale
-		print("doing horiz");
+		//print("doing horiz");
 		cellscore += horizontalCheck(t);
-		print("horiz done");
+		//print("horiz done");
 
 		// controllo verticale
-		print("doing vert");
+		//print("doing vert");
 		cellscore += verticalCheck(t);
-		print("vert done");
+		//print("vert done");
 
 		if (M >= K && N >= K) {
 			// controllo diagonale dx, offset orizzontale
-			print("doing horiz right");
+			//print("doing horiz right");
 			cellscore += DiagonalCheckHorizontalOffset(t, true);
-			print("horiz right done");
+			//print("horiz right done");
 
 			// controllo diagonale dx, offset verticale
-			print("doing vert right");
+			//print("doing vert right");
 			cellscore += DiagonalCheckVerticalOffset(t, true);
-			print("vert right done");
+			//print("vert right done");
 
 			// controllo diagonale sx, offset orizzontale
-			print("doing horiz left");
+			//print("doing horiz left");
 			cellscore += DiagonalCheckHorizontalOffset(t, false);
-			print("horiz left done");
+			//print("horiz left done");
 			
 
 			// controllo diagonale sx, offset verticale
-			print("doing vert left");
+			//print("doing vert left");
 			cellscore += DiagonalCheckVerticalOffset(t, false);
-			print("vert left done");
+			//print("vert left done");
 
 		}
 
@@ -380,7 +381,7 @@ public class RandomPlayer implements MNKPlayer {
 	private void getChilds(myTree<MNKBoard> tree, MNKCell[] MC){
 		HashSet<MNKCell> list = new HashSet<MNKCell>();
 		for (MNKCell c : MC) {
-			//aggiungo le caselle esistenti alla Hast table
+			//aggiungo le caselle esistenti alla Hash table
 			// angles
 			if (c.i != M-1 && c.j != N-1) list.add(new MNKCell(c.i+1, c.j+1)); //dwn r
 			if (c.i != 0 && c.j != N-1)   list.add(new MNKCell(c.i-1, c.j+1)); // up r
@@ -431,7 +432,7 @@ public class RandomPlayer implements MNKPlayer {
 		} 
 		// caso mio turno
 		else if (myTurn) {
-			getChilds(tree, MCs);
+			if (tree.childs.size() == 0) getChilds(tree, MCs);
 			cell.eval = (int) Double.NEGATIVE_INFINITY;
 			for (myTree<MNKBoard> c : tree.childs) {
 				cell = max(cell, abPruning(c, false, alpha, beta, depth - 1));
@@ -441,7 +442,7 @@ public class RandomPlayer implements MNKPlayer {
 					break;
 			}
 		} else { // caso turno avversario
-			getChilds(tree, MCs);
+			if (tree.childs.size() == 0) getChilds(tree, MCs);
 			cell.eval = (int) Double.POSITIVE_INFINITY;
 			for (myTree<MNKBoard> c : tree.childs) {
 				cell = min(cell, abPruning(c, true, alpha, beta, depth - 1));
@@ -608,7 +609,12 @@ public class RandomPlayer implements MNKPlayer {
 		if (MC.length == 1) {
 			RandomPlayer.node = new myTree<MNKBoard>(copyBoard(B));
 
-			getChilds(RandomPlayer.node, MC);
+			// se lo faccio una volta l'AB ritorna una soluzione teoricamente non ottimale e impossibile, se lo faccio 2 funziona ????
+			// perché?????
+			// il codice va a cazzo di cane per questo turno e quello successivo a meno che non ho più copie dei bambini nell'albero...?
+			// non capisco dove sia il problema
+			 getChilds(RandomPlayer.node, MC);
+			 getChilds(RandomPlayer.node, MC);
 
 			MinmaxMove bestmove;
 
