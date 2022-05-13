@@ -432,7 +432,7 @@ public class RandomPlayer implements MNKPlayer {
 		} 
 		// caso mio turno
 		else if (myTurn) {
-			if (tree.childs.size() == 0) getChilds(tree, MCs);
+			if (tree.isLeaf()) getChilds(tree, MCs);
 			cell.eval = (int) Double.NEGATIVE_INFINITY;
 			for (myTree<MNKBoard> c : tree.childs) {
 				cell = max(cell, abPruning(c, false, alpha, beta, depth - 1));
@@ -442,7 +442,7 @@ public class RandomPlayer implements MNKPlayer {
 					break;
 			}
 		} else { // caso turno avversario
-			if (tree.childs.size() == 0) getChilds(tree, MCs);
+			if (tree.isLeaf()) getChilds(tree, MCs);
 			cell.eval = (int) Double.POSITIVE_INFINITY;
 			for (myTree<MNKBoard> c : tree.childs) {
 				cell = min(cell, abPruning(c, true, alpha, beta, depth - 1));
@@ -600,7 +600,7 @@ public class RandomPlayer implements MNKPlayer {
 			// disposizione
 			RandomPlayer.node = new myTree<MNKBoard>(copyBoard(B)); // creo l'albero interno
 
-			abPruning(RandomPlayer.node, true, (int) Double.NEGATIVE_INFINITY, (int) Double.POSITIVE_INFINITY,
+			abPruning(RandomPlayer.node, false, (int) Double.NEGATIVE_INFINITY, (int) Double.POSITIVE_INFINITY,
 					RandomPlayer.DEPTH);
 
 			return new MNKCell((int) (B.M / 2), (int) (B.N / 2), myCell);
