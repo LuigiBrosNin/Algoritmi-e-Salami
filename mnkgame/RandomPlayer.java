@@ -71,7 +71,8 @@ public class RandomPlayer implements MNKPlayer {
 
 		// prende la depth intera se la board è (relativamente) piccola (max 5x5)
 		// altrimenti prende una depth basata su K, nettamente inferiore (permette un albero più completo in superficie ma approssimato)
-		DEPTH = (M*N <= 25) ? M*N-1 : K*2 ;
+		//DEPTH = (M*N <= 25) ? M*N-1 : K*2 ;
+		DEPTH = 10;
 
 		// il numero di nodi e foglie da calcolare massimo sono ((M*N)-1) * ((M*N)-2)
 		// ... , che in casi troppo grandi non riuscirà mai a fare in 10 secondi
@@ -362,7 +363,7 @@ public class RandomPlayer implements MNKPlayer {
 
 		}
 
-		if (myTurn)
+		if (!myTurn)
 			return (cellscore);
 		else
 			return (-cellscore);
