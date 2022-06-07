@@ -578,7 +578,7 @@ public class RandomPlayer implements MNKPlayer {
 	
 	public MNKCell selectCell(MNKCell[] FC, MNKCell[] MC) {
 		start = currentTime(); // prendo il tempo di inizio esecuzione funzione (per il timer)
-		print("selecting...");
+		//print("selecting...");
 		// Uncomment to check the move timeout
 		/*
 		 * try {
@@ -662,6 +662,6 @@ public class RandomPlayer implements MNKPlayer {
 	}
 
 	public String playerName() {
-		return "AAAAAH";
+		return "youtu.be/dQw4w9WgXcQ";
 	}
 }
