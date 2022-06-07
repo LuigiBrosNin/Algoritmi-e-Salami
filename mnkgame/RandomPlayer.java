@@ -662,6 +662,6 @@ public class RandomPlayer implements MNKPlayer {
 	}
 
 	public String playerName() {
-		return "AAAAAH";
+		return "youtu.be/dQw4w9WgXcQ";
 	}
 }
