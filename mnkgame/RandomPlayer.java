@@ -157,7 +157,7 @@ public class RandomPlayer implements MNKPlayer {
 				}
 			}
 		}
-		checkScore = myValue - yourValue;
+		checkScore = yourValue - myValue;
 		return checkScore;
 	}
 
@@ -191,7 +191,7 @@ public class RandomPlayer implements MNKPlayer {
 				}
 			}
 		}
-		checkScore = myValue - yourValue;
+		checkScore = yourValue - myValue;
 		return checkScore;
 	}
 
@@ -255,7 +255,7 @@ public class RandomPlayer implements MNKPlayer {
 				}
 			}
 		}
-		checkScore = myValue - yourValue;
+		checkScore = yourValue - myValue;
 		return checkScore;
 	}
 
@@ -319,7 +319,7 @@ public class RandomPlayer implements MNKPlayer {
 				}
 			}
 		}
-		checkScore = myValue - yourValue;
+		checkScore = yourValue - myValue;
 		return checkScore;
 	}
 	/*
@@ -363,7 +363,7 @@ public class RandomPlayer implements MNKPlayer {
 
 		}
 
-		if (!myTurn)
+		if (myTurn)
 			return (cellscore);
 		else
 			return (-cellscore);
