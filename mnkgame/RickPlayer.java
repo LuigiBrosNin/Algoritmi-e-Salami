@@ -31,7 +31,7 @@ import java.util.Random;
 /**
  * not Totally random software player.
  */
-public class RandomPlayer implements MNKPlayer {
+public class RickPlayer implements MNKPlayer {
 	// default privates
 	private Random rand;
 	// board ausiliaria per effettuare calcoli
@@ -53,7 +53,7 @@ public class RandomPlayer implements MNKPlayer {
 	/**
 	 * Default empty constructor
 	 */
-	public RandomPlayer() {
+	public RickPlayer() {
 	}
 
 	public void initPlayer(int M, int N, int K, boolean first, int timeout_in_secs) {
@@ -78,9 +78,9 @@ public class RandomPlayer implements MNKPlayer {
 		// ... , che in casi troppo grandi non riuscirà mai a fare in 10 secondi
 		// quindi limito la depth e mi porto avanti di appena K mosse per generare un albero superiore più completo
 
-		RandomPlayer.M = M;
-		RandomPlayer.N = N;
-		RandomPlayer.K = K;
+		RickPlayer.M = M;
+		RickPlayer.N = N;
+		RickPlayer.K = K;
 
 		// Uncomment to chech the initialization timeout
 		/*
@@ -109,11 +109,11 @@ public class RandomPlayer implements MNKPlayer {
 		} else
 			return b;
 	}
-
+/*
 	private void print(String a) {
 		System.out.println(a);
 	}
-
+*/
 	private long currentTime() {
 		return System.currentTimeMillis();
 	}
@@ -555,18 +555,18 @@ public class RandomPlayer implements MNKPlayer {
 	// cerca la mossa nell'albero di gioco e aggiorna l'albero interno
 	private void updateNode(MNKCell move){
 	   	boolean moved = false;
-	   for (int i = 0; i < RandomPlayer.node.childs.size(); i++) {
+	   for (int i = 0; i < RickPlayer.node.childs.size(); i++) {
 			MNKCell[] CMC = ((MNKBoard)(node.childs.get(i).val)).getMarkedCells();
 			MNKCell CLM = CMC[CMC.length-1];
 			if (CLM.i == move.i && CLM.j == move.j) {
-				RandomPlayer.node = RandomPlayer.node.childs.get(i);
+				RickPlayer.node = RickPlayer.node.childs.get(i);
 				moved = true;
 				break;
 			}
 		}
 		// se non esiste il nodo che cerco, lo creo e assegno
 		if (!moved) {
-			RandomPlayer.node = new myTree<MNKBoard>(copyBoard(B));
+			RickPlayer.node = new myTree<MNKBoard>(copyBoard(B));
 		}
 	}
 
@@ -599,27 +599,27 @@ public class RandomPlayer implements MNKPlayer {
 			B.markCell((int) (B.M / 2), (int) (B.N / 2));
 			// iniziamo a generare l'albero prima di ritornare per usare il tempo a
 			// disposizione
-			RandomPlayer.node = new myTree<MNKBoard>(copyBoard(B)); // creo l'albero interno
+			RickPlayer.node = new myTree<MNKBoard>(copyBoard(B)); // creo l'albero interno
 
-			abPruning(RandomPlayer.node, false, (int) Double.NEGATIVE_INFINITY, (int) Double.POSITIVE_INFINITY,
-					RandomPlayer.DEPTH);
+			abPruning(RickPlayer.node, false, (int) Double.NEGATIVE_INFINITY, (int) Double.POSITIVE_INFINITY,
+					RickPlayer.DEPTH);
 
 			return new MNKCell((int) (B.M / 2), (int) (B.N / 2), myCell);
 		}
 		// seconda mossa in assoluto, dobbiamo creare il gametree e iniziare a calcolare
 		if (MC.length == 1) {
-			RandomPlayer.node = new myTree<MNKBoard>(copyBoard(B));
+			RickPlayer.node = new myTree<MNKBoard>(copyBoard(B));
 
 			// se lo faccio una volta l'AB ritorna una soluzione teoricamente non ottimale e impossibile, se lo faccio 2 funziona ????
 			// perché?????
-			// il codice va a cazzo di cane per questo turno e quello successivo a meno che non ho più copie dei bambini nell'albero...?
+			// il codice va a caso per questo turno e quello successivo a meno che non ho più copie dei bambini nell'albero...?
 			// non capisco dove sia il problema
-			 getChilds(RandomPlayer.node, MC);
-			 getChilds(RandomPlayer.node, MC);
+			 getChilds(RickPlayer.node, MC);
+			 getChilds(RickPlayer.node, MC);
 
 			MinmaxMove bestmove;
 
-			bestmove = abPruning(RandomPlayer.node, true, (int) Double.NEGATIVE_INFINITY,(int) Double.POSITIVE_INFINITY, RandomPlayer.DEPTH);
+			bestmove = abPruning(RickPlayer.node, true, (int) Double.NEGATIVE_INFINITY,(int) Double.POSITIVE_INFINITY, RickPlayer.DEPTH);
 
 			MNKCell ret = new MNKCell(bestmove.i, bestmove.j);
 			
@@ -651,7 +651,7 @@ public class RandomPlayer implements MNKPlayer {
 		}
 		// inizio a calcolare la mossa migliore
 		MinmaxMove bestmove;
-		bestmove = abPruning(RandomPlayer.node, true, (int) Double.NEGATIVE_INFINITY,(int) Double.POSITIVE_INFINITY, RandomPlayer.DEPTH);
+		bestmove = abPruning(RickPlayer.node, true, (int) Double.NEGATIVE_INFINITY,(int) Double.POSITIVE_INFINITY, RickPlayer.DEPTH);
 		ret = new MNKCell(bestmove.i, bestmove.j);
 			
 		B.markCell(ret.i, ret.j);
